@@ -98,6 +98,11 @@ class ValuationEngine:
             t_qty = tg["total_qty"]
             tg["avg_price"] = (tg["total_cost_ccy"] / t_qty) if t_qty > 0 else 0.0
             tg["avg_fx"] = (tg["total_cost_krw"] / tg["total_cost_ccy"]) if tg["total_cost_ccy"] > 0 else 1.0
+            tg["price"] = float(tg["asset"]["price"])
+            tg["prev_price"] = float(tg["asset"].get("prev_price") or tg["asset"]["price"])
+            tg["name"] = tg["asset"]["name"]
+            tg["currency"] = tg["asset"]["currency"]
+            tg["market"] = tg["asset"]["market"]
             ticker_list.append(tg)
 
         ticker_list.sort(key=lambda x: (0 if x["asset"]["kind"] == "STOCK" else 1, -x["total_val_krw"]))

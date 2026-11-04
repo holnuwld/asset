@@ -58,11 +58,15 @@
       <p class="text-xs text-[var(--muted-foreground)] mt-0.5">삼성(종합·IRP) · 나무(CMA·KRX금) · 키움(해외·ISA) · KB(연금) · 새마을금고 · 토스(엔화) | 총 평가 10억 6,000만원 | 월간·연간 실현손익 · 기간별 매매조회 · MWRR 평잔수익률</p>
     </div>
     <div class="flex flex-wrap items-center gap-2">
-      <button onclick="openSetupModal()" class="bg-sky-500 hover:bg-sky-600 text-white px-3 py-1.5 rounded-lg text-xs font-semibold transition">📥 초기자산 / 원금 추가납입</button>
-      <button onclick="toggleTheme()" class="bg-[var(--card)] hover:opacity-90 border border-[var(--border)] px-3 py-1.5 rounded-lg text-xs font-medium transition">🌓 테마</button>
-      <button onclick="toggleColorRule()" id="btn-color-rule" class="bg-[var(--card)] hover:opacity-90 border border-[var(--border)] px-3 py-1.5 rounded-lg text-xs font-medium transition">🎨 한국식 (상승 빨강)</button>
-      <button onclick="simulateMarketCrash()" class="bg-rose-500/15 hover:bg-rose-500/25 text-rose-400 border border-rose-500/30 px-3 py-1.5 rounded-lg text-xs font-semibold transition">📉 급락 시뮬레이션</button>
-      <button onclick="simulateMarketPriceUpdate()" class="bg-[var(--secondary)] hover:opacity-90 text-[var(--secondary-foreground)] border border-[var(--border)] px-3 py-1.5 rounded-lg text-xs font-medium transition">🔄 시세 변동</button>
+      <button onclick="triggerLiveMarketRefresh()" id="btn-refresh-live" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 rounded-lg text-xs font-semibold shadow-sm transition flex items-center gap-1.5">⚡ 실시간 시세 갱신</button>
+      <label class="flex items-center gap-1.5 text-xs text-[var(--muted-foreground)] cursor-pointer bg-[var(--card)] px-2.5 py-1.5 rounded-lg border border-[var(--border)] hover:border-sky-400 transition">
+        <input type="checkbox" id="auto-refresh-check" onchange="toggleAutoRefresh(this.checked)" class="rounded text-sky-500 accent-sky-500">
+        <span class="font-medium">30초 자동</span>
+      </label>
+      <span id="last-refresh-time" class="text-[11px] text-[var(--muted-foreground)] hidden sm:inline-block"></span>
+      <button onclick="openSetupModal()" class="bg-sky-500 hover:bg-sky-600 text-white px-3 py-1.5 rounded-lg text-xs font-semibold transition">📥 자산설정 / 원금입금</button>
+      <button onclick="toggleTheme()" class="bg-[var(--card)] hover:opacity-90 border border-[var(--border)] px-2.5 py-1.5 rounded-lg text-xs font-medium transition">🌓 테마</button>
+      <button onclick="toggleColorRule()" id="btn-color-rule" class="bg-[var(--card)] hover:opacity-90 border border-[var(--border)] px-2.5 py-1.5 rounded-lg text-xs font-medium transition">🎨 한국식</button>
     </div>
   </header>
 
@@ -1470,8 +1474,10 @@
         const dd = (a.price - a.high52) / a.high52 * 100;
         const pnl = g.avg ? (a.price - g.avg) / g.avg * 100 : 0;
         const pnlKRW = g.costKRW ? (g.val / g.costKRW - 1) * 100 : 0;
+        const dayChg = (a.prev && a.prev > 0) ? ((a.price - a.prev) / a.prev * 100) : 0;
+        const dayChgBadge = Math.abs(dayChg) >= 0.05 ? `<span class="text-[10px] ml-1 px-1 rounded ${chgCls(dayChg)}">${spct(dayChg)}</span>` : '';
         cells = `
-          <td class="py-3 px-2 text-right"><div class="font-semibold">${money(a.price, a.ccy)}</div><div class="text-[var(--muted-foreground)]">고점 ${money(a.high52, a.ccy)}</div></td>
+          <td class="py-3 px-2 text-right"><div class="font-semibold flex items-center justify-end">${money(a.price, a.ccy)} ${dayChgBadge}</div><div class="text-[var(--muted-foreground)]">고점 ${money(a.high52, a.ccy)}</div></td>
           <td class="py-3 px-2 text-right font-semibold ${dd <= -S.athDrop ? 'text-rose-500' : 'text-[var(--muted-foreground)]'}">${dd.toFixed(1)}%${dd <= -S.athDrop ? ' ⚠️' : ''}</td>
           <td class="py-3 px-2 text-right font-semibold">${fmtQty(g.qty)}${a.market === 'KRX_GOLD' ? 'g' : '주'}</td>
           <td class="py-3 px-2 text-right text-[var(--muted-foreground)]">${money(g.avg, a.ccy)}${a.ccy !== 'KRW' ? `<div>@${fmtFx(g.avgFx, a.ccy)}</div>` : ''}</td>
@@ -1976,8 +1982,30 @@
         const summary = await sumRes.json();
         if (summary.ticker_list) {
           summary.ticker_list.forEach(item => {
-            if (ASSETS[item.ticker]) {
-              ASSETS[item.ticker].price = item.price;
+            const t = item.ticker;
+            const p = item.price ?? (item.asset ? item.asset.price : undefined);
+            const prev = item.prev_price ?? (item.asset ? item.asset.prev_price : undefined);
+            const name = item.name ?? (item.asset ? item.asset.name : undefined);
+            if (ASSETS[t]) {
+              if (p !== undefined) ASSETS[t].price = p;
+              if (prev !== undefined) ASSETS[t].prev = prev;
+              if (name) ASSETS[t].name = name;
+            } else if (item.asset) {
+              ASSETS[t] = {
+                name: name || t,
+                market: item.asset.market || 'KR_STOCK',
+                ccy: item.asset.currency || 'KRW',
+                kind: item.asset.kind || 'STOCK',
+                price: p || 0,
+                prev: prev || p || 0,
+                high52: item.asset.high_52w || p || 0,
+                exp: {
+                  risk: item.asset.exp_risk || 'risk_on',
+                  currency: { real: item.asset.exp_currency_real || item.asset.currency, listing: item.asset.exp_currency_listing || item.asset.currency },
+                  country: item.asset.exp_country || 'KR',
+                  liquidity: item.asset.exp_liquidity || 'liquid'
+                }
+              };
             }
           });
         }
@@ -2351,18 +2379,53 @@ KB개인연금,TIGER 미국S&P500,1800,16200,1
     FX.USD = 1405.0;
     renderAll(); checkAlerts(false); renderAll();
   }
-  async function simulateMarketPriceUpdate() {
+    let autoRefreshTimer = null;
+  function toggleAutoRefresh(enabled) {
+    if (autoRefreshTimer) {
+      clearInterval(autoRefreshTimer);
+      autoRefreshTimer = null;
+    }
+    if (enabled) {
+      triggerLiveMarketRefresh();
+      autoRefreshTimer = setInterval(() => {
+        triggerLiveMarketRefresh();
+      }, 30000);
+    }
+  }
+
+  async function triggerLiveMarketRefresh() {
+    const btn = document.getElementById('btn-refresh-live');
+    const timeSpan = document.getElementById('last-refresh-time');
+    if (btn) {
+      btn.disabled = true;
+      btn.innerHTML = '⚡ 갱신 중...';
+      btn.classList.add('opacity-50');
+    }
+    if (timeSpan) timeSpan.textContent = '실시간 시세 조회 중...';
+
     if (isBackendConnected) {
       try {
-        const res = await fetch('/api/macro/refresh', { method: 'POST' });
+        const res = await fetch('/api/market/refresh-live', { method: 'POST' });
         if (res.ok) {
+          const data = await res.json();
           await syncDataFromBackend();
+          if (timeSpan) {
+            timeSpan.textContent = `갱신: ${data.updated_at ? data.updated_at.slice(11, 19) : new Date().toLocaleTimeString()} (${data.assets_updated || 40}종목)`;
+          }
           return;
         }
       } catch (e) {
-        console.warn('Backend refresh failed:', e);
+        console.warn('Live market refresh failed:', e);
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = '⚡ 실시간 시세 갱신';
+          btn.classList.remove('opacity-50');
+        }
       }
     }
+
+    // fallback simulation if offline
     Object.values(ASSETS).forEach(a => {
       if (a.kind !== 'STOCK') return;
       const delta = 1 + (Math.random() * 0.05 - 0.02);
@@ -2370,6 +2433,12 @@ KB개인연금,TIGER 미국S&P500,1800,16200,1
       if (a.price > a.high52) a.high52 = a.price;
     });
     renderAll(); checkAlerts(false); renderAll();
+    if (timeSpan) timeSpan.textContent = '오프라인 시뮬레이션 완료';
+    if (btn) {
+      btn.disabled = false;
+      btn.innerHTML = '⚡ 실시간 시세 갱신';
+      btn.classList.remove('opacity-50');
+    }
   }
   function toggleTheme() { document.documentElement.classList.toggle('light'); document.documentElement.classList.toggle('dark'); }
   function toggleColorRule() {

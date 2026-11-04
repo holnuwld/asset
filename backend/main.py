@@ -153,6 +153,36 @@ def get_macro():
 def refresh_macro():
     return fetcher.update_db_quotes()
 
+@app.post("/api/market/refresh-live")
+def refresh_live_market():
+    # 1. Update macro quotes (FX rates, Indices, Gold, Crypto)
+    macro_quotes = fetcher.update_db_quotes()
+    
+    # 2. Update FX_CURRENT rates from fetched quotes
+    for q in macro_quotes:
+        if q.get("symbol") == "USD/KRW" and q.get("value"):
+            FX_CURRENT["USD"] = float(q["value"])
+        elif q.get("symbol") == "JPY/KRW" and q.get("value"):
+            FX_CURRENT["JPY"] = float(q["value"]) / 100.0  # Naver quotes JPY per 100 yen
+            
+    ledger_engine.fx_map = FX_CURRENT
+    val_engine.fx_map = FX_CURRENT
+
+    # 3. Update real-time prices for all portfolio assets
+    asset_res = fetcher.update_portfolio_prices_in_db()
+
+    # 4. Sync daily snapshot with current market valuation
+    accounts_map, assets_map, opening, transactions = load_db_state()
+    BackfillEngine(ledger_engine, val_engine).run_catchup_sync(datetime.now())
+
+    return {
+        "status": "success",
+        "updated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "assets_updated": asset_res.get("updated_count", 0),
+        "fx": FX_CURRENT,
+        "prices": asset_res.get("prices", {})
+    }
+
 class ExternalDepositReq(BaseModel):
     account_id: str
     amount: float
@@ -292,5 +322,4 @@ def serve_index():
     index_file = FRONTEND_DIR / "index.html"
     if index_file.exists():
         return FileResponse(index_file)
-    sample_file = Path(__file__).resolve().parent.parent / "sample_dashboard_v2.html"
-    return FileResponse(sample_file)
+    raise HTTPException(status_code=404, detail="frontend/index.html not found")
