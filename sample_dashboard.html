@@ -1,0 +1,1219 @@
+<!DOCTYPE html>
+<html lang="ko" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AssetFlow - 스마트 자산관리 & 리밸런싱 샘플 대시보드</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <style>
+    :root {
+      --background: #0b0f19;
+      --foreground: #f1f5f9;
+      --card: #111827;
+      --border: #1e293b;
+      --muted-foreground: #94a3b8;
+      --primary: #0ea5e9;
+      --primary-foreground: #ffffff;
+      --secondary: #1e293b;
+      --secondary-foreground: #e2e8f0;
+    }
+    html.light {
+      --background: #f8fafc;
+      --foreground: #0f172a;
+      --card: #ffffff;
+      --border: #e2e8f0;
+      --muted-foreground: #64748b;
+      --primary: #0284c7;
+      --primary-foreground: #ffffff;
+      --secondary: #f1f5f9;
+      --secondary-foreground: #1e293b;
+    }
+    body {
+      background-color: var(--background);
+      color: var(--foreground);
+      font-family: -apple-system, BlinkMacSystemFont, "Pretendard", "Segoe UI", Roboto, sans-serif;
+    }
+    .pill-active {
+      background-color: var(--primary);
+      color: var(--primary-foreground);
+    }
+    .subtab-active {
+      border-bottom: 2px solid var(--primary);
+      color: var(--foreground);
+      font-weight: 700;
+    }
+    .segment-clickable {
+      cursor: pointer;
+      transition: filter 0.15s ease, transform 0.15s ease;
+    }
+    .segment-clickable:hover {
+      filter: brightness(1.15);
+    }
+    .card-selected {
+      outline: 2px solid #38bdf8;
+      outline-offset: -1px;
+    }
+  </style>
+</head>
+<body class="antialiased p-3 md:p-6 select-none max-w-[1600px] mx-auto">
+
+  <!-- 1. Top Macro & Market Indicators Compact Text Bar -->
+  <section class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-3 mb-4 shadow-sm text-xs space-y-1.5">
+    <div class="flex flex-wrap items-center gap-x-4 gap-y-1">
+      <span class="font-bold text-[var(--muted-foreground)] w-16 shrink-0">💱 환율</span>
+      <span>원/달러 <strong>1,385.0</strong> <span class="text-rose-400">(+0.42%)</span></span>
+      <span class="text-[var(--border)]">|</span>
+      <span>엔화(100엔) <strong>921.5</strong> <span class="text-sky-400">(-0.31%)</span></span>
+      <span class="text-[var(--border)]">|</span>
+      <span>유로 <strong>1,502.3</strong> <span class="text-rose-400">(+0.18%)</span></span>
+      <span class="text-[var(--border)]">|</span>
+      <span>위안화 <strong>194.2</strong> <span class="text-sky-400">(-0.12%)</span></span>
+    </div>
+
+    <div class="flex flex-wrap items-center gap-x-4 gap-y-1 border-t border-[var(--border)]/60 pt-1.5">
+      <span class="font-bold text-[var(--muted-foreground)] w-16 shrink-0">🏛️ 국채금리</span>
+      <span>미국10년 <strong>4.08%</strong> <span class="text-rose-400">(+0.04%p)</span></span>
+      <span class="text-[var(--border)]">|</span>
+      <span>미국30년 <strong>4.38%</strong> <span class="text-rose-400">(+0.03%p)</span></span>
+      <span class="text-[var(--border)]">|</span>
+      <span>한국10년 <strong>3.09%</strong> <span class="text-sky-400">(-0.02%p)</span></span>
+      <span class="text-[var(--border)]">|</span>
+      <span>일본10년 <strong>0.97%</strong> <span class="text-rose-400">(+0.01%p)</span></span>
+      <span class="text-[var(--border)]">|</span>
+      <span>중국10년 <strong>2.12%</strong> <span class="text-sky-400">(-0.03%p)</span></span>
+    </div>
+
+    <div class="flex flex-wrap items-center gap-x-4 gap-y-1 border-t border-[var(--border)]/60 pt-1.5">
+      <span class="font-bold text-[var(--muted-foreground)] w-16 shrink-0">📈 지수/대체</span>
+      <span>나스닥 <strong>18,489.5</strong> <span class="text-rose-400">(+0.64%)</span></span>
+      <span class="text-[var(--border)]">|</span>
+      <span>코스피 <strong>2,593.8</strong> <span class="text-sky-400">(-0.59%)</span></span>
+      <span class="text-[var(--border)]">|</span>
+      <span>코스닥 <strong>753.2</strong> <span class="text-sky-400">(-1.12%)</span></span>
+      <span class="text-[var(--border)]">|</span>
+      <span>니케이 <strong>38,981.7</strong> <span class="text-rose-400">(+0.18%)</span></span>
+      <span class="text-[var(--border)]">|</span>
+      <span>KRX금(g) <strong>₩118,400</strong> <span class="text-rose-400">(+1.05%)</span></span>
+      <span class="text-[var(--border)]">|</span>
+      <span>비트코인 <strong>$68,420</strong> <span class="text-rose-400">(+2.14%)</span> · 업비트 <strong>₩94,850,000</strong> <span class="text-rose-400">(+1.98%)</span></span>
+    </div>
+  </section>
+
+  <!-- Header -->
+  <header class="flex flex-col md:flex-row md:items-center justify-between gap-3 pb-4 mb-5 border-b border-[var(--border)]">
+    <div>
+      <div class="flex items-center gap-2">
+        <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/15 text-emerald-500 border border-emerald-500/30">● 로컬서버 PC (SQLite) 직결</span>
+        <h1 class="text-lg md:text-xl font-bold tracking-tight">AssetFlow 포트폴리오 매니저 (샘플 대시보드)</h1>
+      </div>
+      <p class="text-xs text-[var(--muted-foreground)] mt-0.5">총자산 또는 막대그래프 항목 클릭 시 시계열 추이 그래프 연동 · 100% 누적 막대 · 로컬DB 보안 저장</p>
+    </div>
+
+    <div class="flex flex-wrap items-center gap-2">
+      <button onclick="toggleTheme()" class="bg-[var(--card)] hover:opacity-90 text-[var(--foreground)] border border-[var(--border)] px-3 py-1.5 rounded-lg text-xs font-medium transition">
+        🌓 테마 전환 (다크/라이트)
+      </button>
+      <button onclick="simulateMarketCrash()" class="bg-rose-500/15 hover:bg-rose-500/25 text-rose-400 border border-rose-500/30 px-3 py-1.5 rounded-lg text-xs font-semibold transition">
+        📉 급락 시뮬레이션 (고점/평단 알림)
+      </button>
+      <button onclick="simulateMarketPriceUpdate()" class="bg-[var(--secondary)] hover:opacity-90 text-[var(--secondary-foreground)] border border-[var(--border)] px-3 py-1.5 rounded-lg text-xs font-medium transition">
+        🔄 시세 변동
+      </button>
+    </div>
+  </header>
+
+  <!-- Summary KPI Row -->
+  <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-5">
+    <!-- Clicking Total Asset Card selects the Total Asset Trend Chart -->
+    <div id="kpi-total-card" onclick="selectTrendTarget('TOTAL', '총 평가 자산 전체')" class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-4 shadow-sm cursor-pointer hover:border-sky-400 transition card-selected">
+      <div class="text-xs text-[var(--muted-foreground)] flex justify-between items-center">
+        <span class="flex items-center gap-1">📊 총 평가 자산 <span class="text-sky-400 font-semibold">(클릭 시 추이)</span></span>
+        <span class="text-emerald-500 font-medium" id="total-profit-badge">+14.9%</span>
+      </div>
+      <div class="text-2xl font-bold mt-1.5" id="total-asset-display">₩342,500,000</div>
+      <div class="text-xs text-[var(--muted-foreground)] mt-1" id="total-cost-display">원금 ₩298,000,000 · 누적수익 +₩44,500,000</div>
+    </div>
+
+    <div class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-4 shadow-sm">
+      <div class="text-xs text-[var(--muted-foreground)] flex justify-between">
+        <span>목표비율 이탈 감시 (±5%p 기준)</span>
+        <span id="rebalance-badge" class="px-2 py-0.5 rounded text-xs font-semibold bg-amber-500/15 text-amber-500">주의</span>
+      </div>
+      <div class="text-base font-bold mt-1.5 truncate" id="rebalance-headline">국가별 주식: 미국주식 초과</div>
+      <div class="text-xs text-[var(--muted-foreground)] mt-1">막대 클릭 시 해당 자산군 비중/금액 추이 표시</div>
+    </div>
+
+    <div class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-4 shadow-sm">
+      <div class="text-xs text-[var(--muted-foreground)] flex justify-between">
+        <span>가격 하락 감시 (고점 / 평단 대비)</span>
+        <span id="drawdown-badge" class="px-2 py-0.5 rounded text-xs font-semibold bg-emerald-500/15 text-emerald-500">정상</span>
+      </div>
+      <div class="text-base font-bold mt-1.5 truncate" id="drawdown-headline">임계치(-10%) 이탈 종목 없음</div>
+      <div class="text-xs text-[var(--muted-foreground)] mt-1">고점 대비 -15% / 평단 대비 -10% 감시중</div>
+    </div>
+
+    <div class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-4 shadow-sm">
+      <div class="text-xs text-[var(--muted-foreground)] flex justify-between">
+        <span>예금 만기 & 로컬 DB 원장</span>
+        <span class="text-sky-400 font-medium">D-12</span>
+      </div>
+      <div class="text-base font-bold mt-1.5">신한 정기예금 ₩5,000만</div>
+      <div class="text-xs text-[var(--muted-foreground)] mt-1">보관된 거래이력: <strong id="tx-count-badge">3건</strong> (취소 가능)</div>
+    </div>
+  </section>
+
+  <!-- Main Content Grid -->
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+    
+    <!-- Left 8 Cols -->
+    <div class="lg:col-span-8 flex flex-col gap-5">
+      
+      <!-- 1. 100% Stacked Bar Chart + Interactive Trend Chart Panel -->
+      <div class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-5 shadow-sm">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-[var(--border)]">
+          <div>
+            <h2 class="text-base font-bold">다차원 자산비율 (100% 통합 막대) & 항목별 추이 그래프</h2>
+            <p class="text-xs text-[var(--muted-foreground)] mt-0.5">막대그래프의 색상 구간이나 하단 카드를 클릭하면 해당 자산군의 기간별 평가액·비중 추이 그래프가 아래에 펼쳐집니다.</p>
+          </div>
+          <!-- Dimension Selector Pills -->
+          <div class="flex flex-wrap gap-1.5" id="dimension-buttons">
+            <button onclick="selectDimension('risk')" id="btn-dim-risk" class="px-2.5 py-1.5 rounded-lg text-xs font-medium border border-[var(--border)] pill-active transition">위험/안전자산</button>
+            <button onclick="selectDimension('currency')" id="btn-dim-currency" class="px-2.5 py-1.5 rounded-lg text-xs font-medium border border-[var(--border)] bg-[var(--background)] hover:opacity-80 transition">통화별</button>
+            <button onclick="selectDimension('country')" id="btn-dim-country" class="px-2.5 py-1.5 rounded-lg text-xs font-medium border border-[var(--border)] bg-[var(--background)] hover:opacity-80 transition">국가별 주식</button>
+            <button onclick="selectDimension('liquidity')" id="btn-dim-liquidity" class="px-2.5 py-1.5 rounded-lg text-xs font-medium border border-[var(--border)] bg-[var(--background)] hover:opacity-80 transition">만기/유동성</button>
+            <button onclick="selectDimension('account')" id="btn-dim-account" class="px-2.5 py-1.5 rounded-lg text-xs font-medium border border-[var(--border)] bg-[var(--background)] hover:opacity-80 transition">계좌별</button>
+          </div>
+        </div>
+
+        <!-- 100% Stacked Bar Area -->
+        <div class="mt-4 space-y-4" id="stacked-bar-container">
+          <!-- Populated by JS -->
+        </div>
+
+        <!-- Interactive Historical Trend Chart Box -->
+        <div class="mt-5 p-4 rounded-xl bg-[var(--background)] border border-[var(--border)]">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
+            <div class="flex items-center gap-2">
+              <span class="px-2 py-0.5 rounded bg-sky-500/20 text-sky-400 text-xs font-bold">📈 선택 항목 추이</span>
+              <h3 class="text-sm font-bold" id="trend-chart-title">총 평가 자산 전체 (최근 6개월 추이)</h3>
+            </div>
+            <div class="flex items-center gap-1.5 text-xs">
+              <button onclick="setTrendMode('value')" id="btn-trend-value" class="px-2.5 py-1 rounded pill-active font-medium transition">평가금액(₩) 추이</button>
+              <button onclick="setTrendMode('ratio')" id="btn-trend-ratio" class="px-2.5 py-1 rounded bg-[var(--card)] border border-[var(--border)] font-medium transition">비중(%) 추이 vs 목표선</button>
+            </div>
+          </div>
+
+          <!-- SVG Line/Area Chart Container -->
+          <div id="svg-trend-container" class="w-full h-44 relative">
+            <!-- Rendered dynamically by JS -->
+          </div>
+          <div class="flex justify-between text-xs text-[var(--muted-foreground)] mt-2 px-2" id="trend-x-labels">
+            <span>5월</span><span>6월</span><span>7월</span><span>8월</span><span>9월</span><span>10월(현재)</span>
+          </div>
+        </div>
+
+        <!-- Actionable Rebalancing Guide Box -->
+        <div class="mt-4 p-3 rounded-lg bg-[var(--background)] border border-[var(--border)] flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <div class="text-xs space-y-0.5">
+            <div class="font-semibold text-[var(--foreground)] flex items-center gap-1.5">
+              <span>💡 리밸런싱 판정 결과</span>
+              <span id="rebalance-status-tag" class="px-2 py-0.5 rounded text-xs">정상 범위</span>
+            </div>
+            <p id="rebalance-advice-text" class="text-[var(--muted-foreground)]"></p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. Sub-tabs: [종목/계좌별 보유현황] vs [텔레그램 거래내역 원장] vs [감시/알림 설정] -->
+      <div class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-5 shadow-sm">
+        <div class="flex items-center justify-between border-b border-[var(--border)] pb-3">
+          <div class="flex gap-5 text-sm">
+            <button onclick="switchMainTab('holdings')" id="tab-btn-holdings" class="pb-2 -mb-3.5 subtab-active transition">
+              📊 종목별 통합 & 다중계좌
+            </button>
+            <button onclick="switchMainTab('ledger')" id="tab-btn-ledger" class="pb-2 -mb-3.5 text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition flex items-center gap-1.5">
+              <span>📜 거래내역 보관함 (원장)</span>
+              <span id="ledger-count-pill" class="px-1.5 py-0.5 text-xs rounded-full bg-sky-500/20 text-sky-400 font-semibold">3</span>
+            </button>
+            <button onclick="switchMainTab('alerts')" id="tab-btn-alerts" class="pb-2 -mb-3.5 text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition">
+              ⏰ 상시 감시 & 알림 설정
+            </button>
+          </div>
+        </div>
+
+        <!-- Tab 1: Holdings Table -->
+        <div id="tab-panel-holdings" class="mt-4">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse text-xs">
+              <thead>
+                <tr class="border-b border-[var(--border)] text-[var(--muted-foreground)]">
+                  <th class="py-2.5 px-2">종목명 (클릭 시 계좌 펼침)</th>
+                  <th class="py-2.5 px-2 text-right">현재가 (고점)</th>
+                  <th class="py-2.5 px-2 text-right">고점대비</th>
+                  <th class="py-2.5 px-2 text-right">총 보유수량</th>
+                  <th class="py-2.5 px-2 text-right">통합 평단가</th>
+                  <th class="py-2.5 px-2 text-right">평단대비</th>
+                  <th class="py-2.5 px-2 text-right">총 평가액</th>
+                </tr>
+              </thead>
+              <tbody id="holdings-tbody" class="divide-y divide-[var(--border)]">
+                <!-- Populated by JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Tab 2: Transaction History Ledger -->
+        <div id="tab-panel-ledger" class="mt-4 hidden">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse text-xs">
+              <thead>
+                <tr class="border-b border-[var(--border)] text-[var(--muted-foreground)]">
+                  <th class="py-2.5 px-2">거래코드 / 일시</th>
+                  <th class="py-2.5 px-2">계좌명</th>
+                  <th class="py-2.5 px-2">구분</th>
+                  <th class="py-2.5 px-2">종목명</th>
+                  <th class="py-2.5 px-2 text-right">수량 / 금액</th>
+                  <th class="py-2.5 px-2 text-right">체결단가</th>
+                  <th class="py-2.5 px-2 text-center">상태 / 취소</th>
+                </tr>
+              </thead>
+              <tbody id="ledger-tbody" class="divide-y divide-[var(--border)]">
+                <!-- Populated by JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Tab 3: Alert Rules Config -->
+        <div id="tab-panel-alerts" class="mt-4 hidden space-y-2.5 text-xs">
+          <div class="p-3 rounded-lg bg-[var(--background)] border border-[var(--border)] flex items-center justify-between">
+            <div>
+              <div class="font-bold">1. 목표 자산비율 이탈 알림</div>
+              <div class="text-[var(--muted-foreground)]">5대 기준 중 목표치 대비 설정값 이상 벗어날 경우 텔레그램 발송</div>
+            </div>
+            <span class="px-2.5 py-1 rounded bg-[var(--card)] border border-[var(--border)] font-semibold">± 5.0 %p 이상</span>
+          </div>
+          <div class="p-3 rounded-lg bg-[var(--background)] border border-[var(--border)] flex items-center justify-between">
+            <div>
+              <div class="font-bold">2. 종목 고점(ATH) 대비 하락 알림</div>
+              <div class="text-[var(--muted-foreground)]">보유 종목 현재가가 고점 대비 설정 비율 이상 하락 시 발송</div>
+            </div>
+            <span class="px-2.5 py-1 rounded bg-[var(--card)] border border-[var(--border)] font-semibold">- 15.0 % 이하</span>
+          </div>
+          <div class="p-3 rounded-lg bg-[var(--background)] border border-[var(--border)] flex items-center justify-between">
+            <div>
+              <div class="font-bold">3. 현재 평단가 대비 하락 알림</div>
+              <div class="text-[var(--muted-foreground)]">통합 평단가 또는 계좌별 평단가 대비 설정 비율 이상 하락 시 발송</div>
+            </div>
+            <span class="px-2.5 py-1 rounded bg-[var(--card)] border border-[var(--border)] font-semibold">- 10.0 % 이하</span>
+          </div>
+          <div class="p-3 rounded-lg bg-[var(--background)] border border-[var(--border)] flex items-center justify-between">
+            <div>
+              <div class="font-bold">4. 예금 만기일 사전 알림</div>
+              <div class="text-[var(--muted-foreground)]">정기예금 만기 도래 전 사전 알림</div>
+            </div>
+            <span class="px-2.5 py-1 rounded bg-[var(--card)] border border-[var(--border)] font-semibold">D-7, D-3, D-Day</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Right 4 Cols: Telegram SMS Regex Parser & Rollback Simulator -->
+    <div class="lg:col-span-4 flex flex-col">
+      <div class="bg-[var(--card)] border border-[var(--border)] rounded-xl shadow-sm flex flex-col h-full overflow-hidden">
+        <!-- Telegram Header -->
+        <div class="p-4 border-b border-[var(--border)] bg-[var(--background)] flex items-center justify-between">
+          <div class="flex items-center gap-2.5">
+            <div class="w-9 h-9 rounded-full bg-sky-500 flex items-center justify-center text-white font-bold text-sm">✈️</div>
+            <div>
+              <div class="text-sm font-bold">텔레그램 체결문자 파서 & 알림봇</div>
+              <div class="text-xs text-[var(--muted-foreground)]">정규식(Regex) 파싱 + 회신 확인 + 즉시 취소</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Chat Messages Area -->
+        <div id="tg-chat-box" class="p-4 space-y-3 overflow-y-auto max-h-[520px] flex-1 bg-[var(--card)] text-xs">
+          <div class="p-3 rounded-lg bg-[var(--background)] border border-[var(--border)] max-w-[92%]">
+            <div class="font-semibold text-sky-400 mb-1">🤖 AssetFlow Bot (로컬서버 데몬)</div>
+            <p class="leading-relaxed">주문체결 문자(SMS/카톡)를 공유하면 정규식으로 파싱하여 <strong>로컬 서버 DB(SQLite)</strong>에 즉시 저장하고 결과를 회신합니다.</p>
+            <p class="text-[var(--muted-foreground)] mt-1.5">오인식 시 회신 메시지의 <strong>[↩️ 거래 취소]</strong> 또는 <code>/취소</code>로 원상복구할 수 있습니다.</p>
+          </div>
+        </div>
+
+        <!-- Quick SMS Share Presets -->
+        <div class="p-3 border-t border-[var(--border)] bg-[var(--background)] space-y-2">
+          <div class="text-xs font-semibold text-[var(--muted-foreground)]">📩 체결문자 공유 / 취소 테스트:</div>
+          <div class="flex flex-wrap gap-1.5">
+            <button onclick="simulateSmsShare('[Web발신] [미래에셋증권] 매수체결 삼성전자 50주 단가 76,000원 계좌:일반위탁')" class="px-2.5 py-1.5 rounded bg-[var(--card)] hover:bg-[var(--secondary)] border border-[var(--border)] text-xs transition text-left">
+              📩 "[미래에셋] 매수 삼성전자 50주 76,000원"
+            </button>
+            <button onclick="simulateSmsShare('[키움증권] 해외주식 매수 NVDA 10주 체결가 $135.00')" class="px-2.5 py-1.5 rounded bg-[var(--card)] hover:bg-[var(--secondary)] border border-[var(--border)] text-xs transition text-left">
+              📩 "[키움] 매수 NVDA 10주 $135"
+            </button>
+            <button onclick="simulateSmsShare('[신한은행] 정기예금 만기해지 50,000,000원 -> 미래에셋CMA 입금')" class="px-2.5 py-1.5 rounded bg-[var(--card)] hover:bg-[var(--secondary)] border border-[var(--border)] text-xs transition text-left">
+              📩 "[신한] 예금 만기 5천만원 → CMA"
+            </button>
+            <button onclick="cancelLastTransactionFromChat()" class="px-2.5 py-1.5 rounded bg-rose-500/15 hover:bg-rose-500/25 text-rose-400 border border-rose-500/30 text-xs font-semibold transition">
+              ↩️ "/취소 (직전 거래 복구)"
+            </button>
+          </div>
+
+          <div class="flex gap-2 pt-1">
+            <input id="tg-input" type="text" placeholder="체결문자 붙여넣기 또는 '/취소' 입력..." class="flex-1 bg-[var(--card)] border border-[var(--border)] rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-sky-500" onkeydown="if(event.key==='Enter') handleCustomTgInput()">
+            <button onclick="handleCustomTgInput()" class="bg-sky-500 hover:bg-sky-600 text-white px-3.5 py-2 rounded-lg text-xs font-semibold transition">전송</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    const FX_RATE = 1385;
+    let currentDimension = 'risk';
+    let expandedTicker = '005930';
+    let txSeq = 1003;
+
+    // Trend Chart State
+    let selectedTrendKey = 'TOTAL';
+    let selectedTrendLabel = '총 평가 자산 전체';
+    let trendMode = 'value'; // 'value' or 'ratio'
+
+    function toggleTheme() {
+      document.documentElement.classList.toggle('light');
+      document.documentElement.classList.toggle('dark');
+    }
+
+    const segmentColors = [
+      { bg: 'bg-sky-500', hex: '#0ea5e9', dot: 'bg-sky-500' },
+      { bg: 'bg-emerald-500', hex: '#10b981', dot: 'bg-emerald-500' },
+      { bg: 'bg-amber-500', hex: '#f59e0b', dot: 'bg-amber-500' },
+      { bg: 'bg-purple-500', hex: '#a855f7', dot: 'bg-purple-500' },
+      { bg: 'bg-rose-500', hex: '#f43f5e', dot: 'bg-rose-500' }
+    ];
+
+    const historicalSeries = {
+      'TOTAL': { values: [295000000, 304000000, 318000000, 312000000, 329000000, 342500000], ratios: [100, 100, 100, 100, 100, 100], target: 100 },
+      '위험자산 (주식)': { values: [185000000, 194000000, 210000000, 206000000, 241000000, 254500000], ratios: [62.7, 63.8, 66.0, 66.0, 73.2, 74.3], target: 65 },
+      '안전자산 (예금/현금)': { values: [110000000, 110000000, 108000000, 106000000, 88000000, 88000000], ratios: [37.3, 36.2, 34.0, 34.0, 26.8, 25.7], target: 35 },
+      '원화 (KRW)': { values: [190000000, 192000000, 195000000, 191000000, 180000000, 181200000], ratios: [64.4, 63.1, 61.3, 61.2, 54.7, 52.9], target: 60 },
+      '달러 (USD)': { values: [105000000, 112000000, 123000000, 121000000, 149000000, 161300000], ratios: [35.6, 36.9, 38.7, 38.8, 45.3, 47.1], target: 40 },
+      '미국주식': { values: [140000000, 148000000, 162000000, 160000000, 195000000, 209800000], ratios: [75.6, 76.2, 77.1, 77.6, 80.9, 82.4], target: 70 },
+      '한국주식': { values: [45000000, 46000000, 48000000, 46000000, 46000000, 44700000], ratios: [24.4, 23.8, 22.9, 22.4, 19.1, 17.6], target: 30 },
+      '만기고정 자산': { values: [50000000, 50000000, 50000000, 50000000, 50000000, 50000000], ratios: [16.9, 16.4, 15.7, 16.0, 15.2, 14.6], target: 20 },
+      '유동자산 (즉시환금)': { values: [245000000, 254000000, 268000000, 262000000, 279000000, 292500000], ratios: [83.1, 83.6, 84.3, 84.0, 84.8, 85.4], target: 80 }
+    };
+
+    const assets = [
+      {
+        ticker: '005930',
+        name: '삼성전자',
+        currency: 'KRW',
+        price: 74500,
+        highPrice: 88800,
+        tags: { risk: '위험자산 (주식)', currency: '원화 (KRW)', country: '한국주식', liquidity: '유동자산 (즉시환금)' },
+        accounts: [
+          { broker: '미래에셋 (일반위탁)', qty: 300, avgPrice: 68000 },
+          { broker: '한국투자 (연금저축)', qty: 200, avgPrice: 71000 },
+          { broker: '토스증권 (ISA)', qty: 100, avgPrice: 73500 }
+        ]
+      },
+      {
+        ticker: 'NVDA',
+        name: 'NVIDIA Corp',
+        currency: 'USD',
+        price: 132.0,
+        highPrice: 140.8,
+        tags: { risk: '위험자산 (주식)', currency: '달러 (USD)', country: '미국주식', liquidity: '유동자산 (즉시환금)' },
+        accounts: [
+          { broker: '키움증권 (해외직투)', qty: 350, avgPrice: 98.0 },
+          { broker: '미래에셋 (일반위탁)', qty: 150, avgPrice: 115.0 }
+        ]
+      },
+      {
+        ticker: 'SPY',
+        name: 'SPDR S&P 500 ETF',
+        currency: 'USD',
+        price: 582.0,
+        highPrice: 590.0,
+        tags: { risk: '위험자산 (주식)', currency: '달러 (USD)', country: '미국주식', liquidity: '유동자산 (즉시환금)' },
+        accounts: [
+          { broker: '키움증권 (해외직투)', qty: 90, avgPrice: 510.0 }
+        ]
+      },
+      {
+        ticker: '360750',
+        name: 'TIGER 미국S&P500',
+        currency: 'KRW',
+        price: 19400,
+        highPrice: 19800,
+        tags: { risk: '위험자산 (주식)', currency: '원화 (KRW)', country: '미국주식', liquidity: '유동자산 (즉시환금)' },
+        accounts: [
+          { broker: '한국투자 (연금저축)', qty: 1800, avgPrice: 16200 },
+          { broker: '토스증권 (ISA)', qty: 700, avgPrice: 17500 }
+        ]
+      },
+      {
+        ticker: 'DEP-SH',
+        name: '신한 정기예금 (만기 10/30)',
+        currency: 'KRW',
+        price: 1,
+        highPrice: 1,
+        tags: { risk: '안전자산 (예금/현금)', currency: '원화 (KRW)', country: '비주식 (현금성)', liquidity: '만기고정 자산' },
+        accounts: [
+          { broker: '신한은행 (정기예금)', qty: 50000000, avgPrice: 1 }
+        ]
+      },
+      {
+        ticker: 'CMA-MA',
+        name: '미래에셋 RP형 CMA',
+        currency: 'KRW',
+        price: 1,
+        highPrice: 1,
+        tags: { risk: '안전자산 (예금/현금)', currency: '원화 (KRW)', country: '비주식 (현금성)', liquidity: '유동자산 (즉시환금)' },
+        accounts: [
+          { broker: '미래에셋 (CMA)', qty: 38000000, avgPrice: 1 }
+        ]
+      }
+    ];
+
+    const transactions = [
+      {
+        id: 'TX-1001',
+        time: '2026-10-15 09:14',
+        broker: '토스증권 (ISA)',
+        type: '매수',
+        ticker: '005930',
+        name: '삼성전자',
+        qty: 20,
+        price: 73500,
+        currency: 'KRW',
+        status: 'ACTIVE',
+        rollbackData: { ticker: '005930', broker: '토스증권 (ISA)', prevQty: 80, prevAvg: 73500 }
+      },
+      {
+        id: 'TX-1002',
+        time: '2026-10-16 23:32',
+        broker: '키움증권 (해외직투)',
+        type: '매수',
+        ticker: 'NVDA',
+        name: 'NVIDIA Corp',
+        qty: 50,
+        price: 128.0,
+        currency: 'USD',
+        status: 'ACTIVE',
+        rollbackData: { ticker: 'NVDA', broker: '키움증권 (해외직투)', prevQty: 300, prevAvg: 93.0 }
+      },
+      {
+        id: 'TX-1003',
+        time: '2026-10-18 10:05',
+        broker: '한국투자 (연금저축)',
+        type: '매수',
+        ticker: '360750',
+        name: 'TIGER 미국S&P500',
+        qty: 100,
+        price: 19200,
+        currency: 'KRW',
+        status: 'ACTIVE',
+        rollbackData: { ticker: '360750', broker: '한국투자 (연금저축)', prevQty: 1700, prevAvg: 16023 }
+      }
+    ];
+
+    const targetConfig = {
+      risk: {
+        title: '위험자산 vs 안전자산 (합계 100%)',
+        targets: { '위험자산 (주식)': 65, '안전자산 (예금/현금)': 35 },
+        tolerance: 5.0
+      },
+      currency: {
+        title: '통화별 자산 비중 (합계 100%)',
+        targets: { '원화 (KRW)': 60, '달러 (USD)': 40 },
+        tolerance: 5.0
+      },
+      country: {
+        title: '주식 내 국가별 비중 (합계 100%)',
+        targets: { '미국주식': 70, '한국주식': 30 },
+        onlyStocks: true,
+        tolerance: 5.0
+      },
+      liquidity: {
+        title: '만기고정 vs 유동성 자산 (합계 100%)',
+        targets: { '만기고정 자산': 20, '유동자산 (즉시환금)': 80 },
+        tolerance: 5.0
+      },
+      account: {
+        title: '계좌별 자산 비중 (합계 100%)',
+        targets: {
+          '키움증권 (해외직투)': 35,
+          '미래에셋 (일반위탁)': 25,
+          '한국투자 (연금저축)': 15,
+          '신한은행 (정기예금)': 15,
+          '기타 (ISA/CMA)': 10
+        },
+        tolerance: 5.0
+      }
+    };
+
+    function getAssetTotalQty(asset) {
+      return asset.accounts.reduce((sum, acc) => sum + acc.qty, 0);
+    }
+
+    function getAssetWeightedAvgPrice(asset) {
+      const totalQty = getAssetTotalQty(asset);
+      if (totalQty === 0) return 0;
+      const totalCost = asset.accounts.reduce((sum, acc) => sum + acc.qty * acc.avgPrice, 0);
+      return totalCost / totalQty;
+    }
+
+    function getAssetValueKRW(asset) {
+      const totalQty = getAssetTotalQty(asset);
+      const mult = asset.currency === 'USD' ? FX_RATE : 1;
+      return totalQty * asset.price * mult;
+    }
+
+    function getAssetCostKRW(asset) {
+      const mult = asset.currency === 'USD' ? FX_RATE : 1;
+      return asset.accounts.reduce((sum, acc) => sum + acc.qty * acc.avgPrice * mult, 0);
+    }
+
+    function formatKRW(val) {
+      return '₩' + Math.round(val).toLocaleString('ko-KR');
+    }
+
+    function switchMainTab(tabName) {
+      ['holdings', 'ledger', 'alerts'].forEach(t => {
+        const panel = document.getElementById('tab-panel-' + t);
+        const btn = document.getElementById('tab-btn-' + t);
+        if (t === tabName) {
+          panel.classList.remove('hidden');
+          btn.classList.add('subtab-active');
+          btn.classList.remove('text-[var(--muted-foreground)]');
+        } else {
+          panel.classList.add('hidden');
+          btn.classList.remove('subtab-active');
+          btn.classList.add('text-[var(--muted-foreground)]');
+        }
+      });
+    }
+
+    function selectDimension(dim) {
+      currentDimension = dim;
+      ['risk', 'currency', 'country', 'liquidity', 'account'].forEach(d => {
+        const btn = document.getElementById('btn-dim-' + d);
+        if (d === dim) {
+          btn.classList.add('pill-active');
+          btn.classList.remove('bg-[var(--background)]');
+        } else {
+          btn.classList.remove('pill-active');
+          btn.classList.add('bg-[var(--background)]');
+        }
+      });
+      const firstKey = Object.keys(targetConfig[dim].targets)[0];
+      selectTrendTarget(firstKey, firstKey);
+    }
+
+    function selectTrendTarget(key, label) {
+      selectedTrendKey = key;
+      selectedTrendLabel = label;
+
+      const totalCard = document.getElementById('kpi-total-card');
+      if (key === 'TOTAL') {
+        totalCard.classList.add('card-selected');
+      } else {
+        totalCard.classList.remove('card-selected');
+      }
+
+      renderStackedDimensionBar();
+      renderTrendChart();
+    }
+
+    function setTrendMode(mode) {
+      trendMode = mode;
+      const btnVal = document.getElementById('btn-trend-value');
+      const btnRat = document.getElementById('btn-trend-ratio');
+      if (mode === 'value') {
+        btnVal.className = 'px-2.5 py-1 rounded pill-active font-medium transition';
+        btnRat.className = 'px-2.5 py-1 rounded bg-[var(--card)] border border-[var(--border)] font-medium transition';
+      } else {
+        btnRat.className = 'px-2.5 py-1 rounded pill-active font-medium transition';
+        btnVal.className = 'px-2.5 py-1 rounded bg-[var(--card)] border border-[var(--border)] font-medium transition';
+      }
+      renderTrendChart();
+    }
+
+    function renderTrendChart() {
+      const container = document.getElementById('svg-trend-container');
+      const titleEl = document.getElementById('trend-chart-title');
+
+      const totalKRW = assets.reduce((sum, a) => sum + getAssetValueKRW(a), 0);
+      historicalSeries['TOTAL'].values[5] = totalKRW;
+
+      let seriesObj = historicalSeries[selectedTrendKey];
+      if (!seriesObj) {
+        seriesObj = {
+          values: [52000000, 56000000, 61000000, 64000000, 69000000, 74000000],
+          ratios: [19.5, 20.8, 22.1, 23.0, 24.5, 25.2],
+          target: 25
+        };
+      }
+
+      const dataPoints = trendMode === 'value' ? seriesObj.values : seriesObj.ratios;
+      const modeName = trendMode === 'value' ? '평가금액(₩) 추이' : `비중(%) 추이 (목표 ${seriesObj.target}%)`;
+      titleEl.textContent = `${selectedTrendLabel} — 최근 6개월 ${modeName}`;
+
+      const width = 680;
+      const height = 165;
+      const padLeft = 24;
+      const padRight = 24;
+      const padTop = 26;
+      const padBottom = 18;
+
+      const minVal = trendMode === 'value'
+        ? Math.min(...dataPoints) * 0.92
+        : Math.max(0, Math.min(...dataPoints, seriesObj.target) - 10);
+      const maxVal = trendMode === 'value'
+        ? Math.max(...dataPoints) * 1.05
+        : Math.min(100, Math.max(...dataPoints, seriesObj.target) + 10);
+
+      const range = (maxVal - minVal) || 1;
+      const stepX = (width - padLeft - padRight) / (dataPoints.length - 1);
+
+      const coords = dataPoints.map((val, idx) => {
+        const x = padLeft + idx * stepX;
+        const y = padTop + (height - padTop - padBottom) * (1 - (val - minVal) / range);
+        return { x, y, val };
+      });
+
+      const polylinePoints = coords.map(p => `${p.x},${p.y}`).join(' ');
+      const areaPoints = `${coords[0].x},${height - padBottom} ${polylinePoints} ${coords[coords.length - 1].x},${height - padBottom}`;
+
+      let targetLineHtml = '';
+      if (trendMode === 'ratio' && selectedTrendKey !== 'TOTAL') {
+        const targetY = padTop + (height - padTop - padBottom) * (1 - (seriesObj.target - minVal) / range);
+        targetLineHtml = `
+          <line x1="${padLeft}" y1="${targetY}" x2="${width - padRight}" y2="${targetY}" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="5,4" />
+          <text x="${width - padRight - 4}" y="${targetY - 5}" text-anchor="end" fill="#f59e0b" font-size="12" font-weight="bold">목표 ${seriesObj.target}%</text>
+        `;
+      }
+
+      const dotsHtml = coords.map((p, i) => {
+        const labelStr = trendMode === 'value'
+          ? `₩${(p.val / 100000000).toFixed(2)}억`
+          : `${p.val.toFixed(1)}%`;
+        return `
+          <circle cx="${p.x}" cy="${p.y}" r="${i === coords.length - 1 ? 5 : 3.5}" fill="#38bdf8" stroke="#0f172a" stroke-width="1.5" />
+          <text x="${p.x}" y="${p.y - 8}" text-anchor="middle" fill="currentColor" font-size="12" font-weight="${i === coords.length - 1 ? 'bold' : 'normal'}">${labelStr}</text>
+        `;
+      }).join('');
+
+      container.innerHTML = `
+        <svg viewBox="0 0 ${width} ${height}" class="w-full h-full overflow-visible">
+          <defs>
+            <linearGradient id="trendGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.35"/>
+              <stop offset="100%" stop-color="#38bdf8" stop-opacity="0.0"/>
+            </linearGradient>
+          </defs>
+          <polygon points="${areaPoints}" fill="url(#trendGrad)" />
+          ${targetLineHtml}
+          <polyline fill="none" stroke="#38bdf8" stroke-width="2.5" points="${polylinePoints}" />
+          ${dotsHtml}
+        </svg>
+      `;
+    }
+
+    function renderStackedDimensionBar() {
+      const cfg = targetConfig[currentDimension];
+      const container = document.getElementById('stacked-bar-container');
+      container.innerHTML = '';
+
+      const bucketValues = {};
+      const keys = Object.keys(cfg.targets);
+      keys.forEach(k => bucketValues[k] = 0);
+
+      assets.forEach(asset => {
+        if (cfg.onlyStocks && asset.tags.country === '비주식 (현금성)') return;
+
+        if (currentDimension === 'account') {
+          const mult = asset.currency === 'USD' ? FX_RATE : 1;
+          asset.accounts.forEach(acc => {
+            const val = acc.qty * asset.price * mult;
+            if (bucketValues.hasOwnProperty(acc.broker)) {
+              bucketValues[acc.broker] += val;
+            } else {
+              bucketValues['기타 (ISA/CMA)'] = (bucketValues['기타 (ISA/CMA)'] || 0) + val;
+            }
+          });
+        } else {
+          const tagVal = asset.tags[currentDimension];
+          if (bucketValues.hasOwnProperty(tagVal)) {
+            bucketValues[tagVal] += getAssetValueKRW(asset);
+          }
+        }
+      });
+
+      const relevantTotal = Object.values(bucketValues).reduce((a, b) => a + b, 0) || 1;
+      let driftAdvice = [];
+
+      let currentSegmentsHtml = '';
+      let targetSegmentsHtml = '';
+      let legendCardsHtml = '';
+
+      keys.forEach((label, idx) => {
+        const color = segmentColors[idx % segmentColors.length];
+        const targetPct = cfg.targets[label];
+        const curVal = bucketValues[label] || 0;
+        const curPct = (curVal / relevantTotal) * 100;
+        const diffPct = curPct - targetPct;
+        const diffKRW = ((targetPct - curPct) / 100) * relevantTotal;
+        const isOut = Math.abs(diffPct) >= cfg.tolerance;
+        const isSelected = selectedTrendKey === label;
+
+        if (historicalSeries[label]) {
+          historicalSeries[label].values[5] = curVal;
+          historicalSeries[label].ratios[5] = curPct;
+        }
+
+        if (isOut) {
+          const actionWord = diffKRW > 0
+            ? `${formatKRW(Math.abs(diffKRW))} 추가 매수`
+            : `${formatKRW(Math.abs(diffKRW))} 비중 축소`;
+          driftAdvice.push(`<strong>${label}</strong> (${diffPct > 0 ? '+' : ''}${diffPct.toFixed(1)}%p 이탈 → ${actionWord})`);
+        }
+
+        const safeLabel = label.replace(/'/g, "\\'");
+
+        currentSegmentsHtml += `
+          <div onclick="selectTrendTarget('${safeLabel}', '${safeLabel}')"
+               class="${color.bg} segment-clickable h-full flex items-center justify-center text-white text-xs font-bold transition-all duration-500 overflow-hidden whitespace-nowrap px-1 border-r border-black/20 last:border-r-0 ${isSelected ? 'ring-2 ring-white z-10' : ''}"
+               style="width: ${curPct}%"
+               title="클릭하여 [${label}] 추이 그래프 보기">
+            ${curPct >= 9 ? `${label.split(' ')[0]} ${curPct.toFixed(1)}%` : ''}
+          </div>
+        `;
+
+        targetSegmentsHtml += `
+          <div onclick="selectTrendTarget('${safeLabel}', '${safeLabel}')"
+               class="${color.bg} segment-clickable opacity-65 h-full flex items-center justify-center text-white text-xs font-semibold transition-all duration-500 overflow-hidden whitespace-nowrap px-1 border-r border-black/20 last:border-r-0"
+               style="width: ${targetPct}%"
+               title="목표 ${targetPct}%">
+            ${targetPct >= 9 ? `목표 ${targetPct}%` : ''}
+          </div>
+        `;
+
+        legendCardsHtml += `
+          <div onclick="selectTrendTarget('${safeLabel}', '${safeLabel}')"
+               class="p-3 rounded-lg bg-[var(--background)] border ${isOut ? 'border-rose-500/60' : 'border-[var(--border)]'} ${isSelected ? 'card-selected' : ''} cursor-pointer hover:border-sky-400 transition flex flex-col justify-between gap-1">
+            <div class="flex items-center justify-between text-xs">
+              <div class="flex items-center gap-1.5 font-semibold">
+                <span class="w-2.5 h-2.5 rounded-sm ${color.dot}"></span>
+                <span>${label}</span>
+              </div>
+              <span class="font-bold ${isOut ? 'text-rose-400' : 'text-emerald-400'}">
+                ${diffPct >= 0 ? '+' : ''}${diffPct.toFixed(1)}%p ${isOut ? '⚠️' : '✓'}
+              </span>
+            </div>
+            <div class="flex items-baseline justify-between mt-1">
+              <span class="text-sm font-bold">${curPct.toFixed(1)}% <span class="text-xs font-normal text-[var(--muted-foreground)]">/ 목표 ${targetPct}%</span></span>
+              <span class="text-xs text-sky-400 font-medium">${formatKRW(curVal)} 📈</span>
+            </div>
+          </div>
+        `;
+      });
+
+      container.innerHTML = `
+        <div class="space-y-2.5">
+          <div class="space-y-1">
+            <div class="flex justify-between text-xs">
+              <span class="font-semibold">현재 자산 비중 (100% 막대 구간 클릭 시 추이 그래프 전환 👇)</span>
+              <span class="text-[var(--muted-foreground)]">기준 총액: ${formatKRW(relevantTotal)}</span>
+            </div>
+            <div class="w-full h-8 rounded-lg overflow-hidden flex bg-[var(--background)] border border-[var(--border)] shadow-inner">
+              ${currentSegmentsHtml}
+            </div>
+          </div>
+
+          <div class="space-y-1">
+            <div class="flex justify-between text-xs">
+              <span class="text-[var(--muted-foreground)] font-medium">목표 자산 비중 (합계 100% 기준선)</span>
+              <span class="text-[var(--muted-foreground)]">허용 오차: ±${cfg.tolerance}%p</span>
+            </div>
+            <div class="w-full h-6 rounded-lg overflow-hidden flex bg-[var(--background)] border border-dashed border-[var(--border)]">
+              ${targetSegmentsHtml}
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-${Math.min(keys.length, 3)} gap-2.5 pt-1">
+          ${legendCardsHtml}
+        </div>
+      `;
+
+      const statusTag = document.getElementById('rebalance-status-tag');
+      const adviceText = document.getElementById('rebalance-advice-text');
+      if (driftAdvice.length > 0) {
+        statusTag.className = 'px-2 py-0.5 rounded text-xs font-semibold bg-rose-500/15 text-rose-500';
+        statusTag.textContent = '리밸런싱 필요';
+        adviceText.innerHTML = driftAdvice.join(' · ');
+      } else {
+        statusTag.className = 'px-2 py-0.5 rounded text-xs font-semibold bg-emerald-500/15 text-emerald-500';
+        statusTag.textContent = '목표 범위 내 안정';
+        adviceText.innerHTML = `현재 [${cfg.title}]의 모든 구성 항목이 목표 비중 ±${cfg.tolerance}%p 이내에 있습니다.`;
+      }
+    }
+
+    function toggleTickerExpand(ticker) {
+      expandedTicker = (expandedTicker === ticker) ? null : ticker;
+      renderHoldingsTable();
+    }
+
+    function renderHoldingsTable() {
+      const tbody = document.getElementById('holdings-tbody');
+      tbody.innerHTML = '';
+
+      let drawdownWarnings = [];
+
+      assets.forEach(asset => {
+        const totalQty = getAssetTotalQty(asset);
+        const avgPrice = getAssetWeightedAvgPrice(asset);
+        const totalKRW = getAssetValueKRW(asset);
+        const profitPct = avgPrice > 0 ? ((asset.price - avgPrice) / avgPrice) * 100 : 0;
+        const athDropPct = asset.highPrice > 1 ? ((asset.price - asset.highPrice) / asset.highPrice) * 100 : 0;
+        const isExpanded = expandedTicker === asset.ticker;
+
+        if (athDropPct <= -15) drawdownWarnings.push(`${asset.name} 고점대비 ${athDropPct.toFixed(1)}%`);
+        if (profitPct <= -10) drawdownWarnings.push(`${asset.name} 평단대비 ${profitPct.toFixed(1)}%`);
+
+        const priceStr = asset.currency === 'USD' ? `$${asset.price.toLocaleString()}` : `₩${asset.price.toLocaleString()}`;
+        const highStr = asset.highPrice > 1
+          ? (asset.currency === 'USD' ? `$${asset.highPrice.toLocaleString()}` : `₩${asset.highPrice.toLocaleString()}`)
+          : '-';
+        const avgStr = asset.currency === 'USD' ? `$${avgPrice.toFixed(1)}` : `₩${Math.round(avgPrice).toLocaleString()}`;
+
+        const tr = document.createElement('tr');
+        tr.className = 'hover:bg-[var(--background)] cursor-pointer transition';
+        tr.onclick = () => toggleTickerExpand(asset.ticker);
+        tr.innerHTML = `
+          <td class="py-3 px-2 font-semibold flex items-center gap-1.5">
+            <span class="text-[var(--muted-foreground)]">${isExpanded ? '▼' : '▶'}</span>
+            <span>${asset.name}</span>
+            <span class="px-1.5 py-0.5 rounded bg-sky-500/15 text-sky-400 font-semibold">${asset.accounts.length}계좌</span>
+          </td>
+          <td class="py-3 px-2 text-right">
+            <div class="font-semibold">${priceStr}</div>
+            <div class="text-[var(--muted-foreground)]">고점: ${highStr}</div>
+          </td>
+          <td class="py-3 px-2 text-right font-semibold ${athDropPct <= -15 ? 'text-rose-500' : 'text-[var(--muted-foreground)]'}">
+            ${asset.highPrice > 1 ? `${athDropPct.toFixed(1)}% ${athDropPct <= -15 ? '⚠️' : ''}` : '-'}
+          </td>
+          <td class="py-3 px-2 text-right font-semibold">${totalQty.toLocaleString()}</td>
+          <td class="py-3 px-2 text-right text-[var(--muted-foreground)]">${avgStr}</td>
+          <td class="py-3 px-2 text-right font-semibold ${profitPct >= 0 ? 'text-emerald-500' : 'text-rose-500'}">
+            ${profitPct >= 0 ? '+' : ''}${profitPct.toFixed(1)}% ${profitPct <= -10 ? '🚨' : ''}
+          </td>
+          <td class="py-3 px-2 text-right font-bold">${formatKRW(totalKRW)}</td>
+        `;
+        tbody.appendChild(tr);
+
+        if (isExpanded) {
+          const detailTr = document.createElement('tr');
+          detailTr.className = 'bg-[var(--background)]';
+          const accountRows = asset.accounts.map(acc => {
+            const mult = asset.currency === 'USD' ? FX_RATE : 1;
+            const accValKRW = acc.qty * asset.price * mult;
+            const accProfit = acc.avgPrice > 0 ? ((asset.price - acc.avgPrice) / acc.avgPrice) * 100 : 0;
+            const accAvgStr = asset.currency === 'USD' ? `$${acc.avgPrice.toFixed(1)}` : `₩${Math.round(acc.avgPrice).toLocaleString()}`;
+            return `
+              <div class="flex flex-wrap items-center justify-between py-2 px-3 rounded-lg bg-[var(--card)] border border-[var(--border)] text-xs gap-2">
+                <div class="flex items-center gap-2">
+                  <span class="w-2 h-2 rounded-full bg-sky-400"></span>
+                  <span class="font-semibold">${acc.broker}</span>
+                </div>
+                <div class="flex items-center gap-4">
+                  <span>수량: <strong>${acc.qty.toLocaleString()}</strong></span>
+                  <span class="text-[var(--muted-foreground)]">평단: ${accAvgStr}</span>
+                  <span class="font-semibold">${formatKRW(accValKRW)}</span>
+                  <span class="font-semibold ${accProfit >= 0 ? 'text-emerald-500' : 'text-rose-500'}">
+                    평단대비 ${accProfit >= 0 ? '+' : ''}${accProfit.toFixed(1)}%
+                  </span>
+                </div>
+              </div>
+            `;
+          }).join('');
+
+          detailTr.innerHTML = `
+            <td colspan="7" class="p-3">
+              <div class="pl-4 border-l-2 border-sky-500 space-y-2">
+                <div class="text-xs font-semibold text-sky-400 mb-1">📂 [${asset.name}] 다중 계좌 개별 현황</div>
+                ${accountRows}
+              </div>
+            </td>
+          `;
+          tbody.appendChild(detailTr);
+        }
+      });
+
+      const ddBadge = document.getElementById('drawdown-badge');
+      const ddHeadline = document.getElementById('drawdown-headline');
+      if (drawdownWarnings.length > 0) {
+        ddBadge.className = 'px-2 py-0.5 rounded text-xs font-semibold bg-rose-500/15 text-rose-500';
+        ddBadge.textContent = `${drawdownWarnings.length}건 경고`;
+        ddHeadline.textContent = drawdownWarnings[0];
+      } else {
+        ddBadge.className = 'px-2 py-0.5 rounded text-xs font-semibold bg-emerald-500/15 text-emerald-500';
+        ddBadge.textContent = '정상';
+        ddHeadline.textContent = '임계치 이탈 종목 없음';
+      }
+    }
+
+    function renderLedgerTable() {
+      const tbody = document.getElementById('ledger-tbody');
+      tbody.innerHTML = '';
+
+      const activeCount = transactions.filter(t => t.status === 'ACTIVE').length;
+      document.getElementById('tx-count-badge').textContent = `${activeCount}건`;
+      document.getElementById('ledger-count-pill').textContent = activeCount;
+
+      transactions.slice().reverse().forEach(tx => {
+        const isCanceled = tx.status === 'CANCELED';
+        const priceStr = tx.currency === 'USD' ? `$${tx.price.toLocaleString()}` : `₩${tx.price.toLocaleString()}`;
+        const tr = document.createElement('tr');
+        tr.className = isCanceled ? 'opacity-45 line-through bg-[var(--background)]' : 'hover:bg-[var(--background)]';
+        tr.innerHTML = `
+          <td class="py-2.5 px-2">
+            <div class="font-bold text-sky-400">#${tx.id}</div>
+            <div class="text-[var(--muted-foreground)]">${tx.time}</div>
+          </td>
+          <td class="py-2.5 px-2 font-medium">${tx.broker}</td>
+          <td class="py-2.5 px-2">
+            <span class="px-2 py-0.5 rounded text-xs font-semibold ${tx.type.includes('매수') ? 'bg-emerald-500/15 text-emerald-400' : 'bg-amber-500/15 text-amber-400'}">${tx.type}</span>
+          </td>
+          <td class="py-2.5 px-2 font-semibold">${tx.name}</td>
+          <td class="py-2.5 px-2 text-right font-semibold">${tx.qty.toLocaleString()}</td>
+          <td class="py-2.5 px-2 text-right">${priceStr}</td>
+          <td class="py-2.5 px-2 text-center">
+            ${isCanceled
+              ? '<span class="text-rose-400 font-semibold">취소됨(복구완료)</span>'
+              : `<button onclick="rollbackTransaction('${tx.id}')" class="px-2 py-1 rounded bg-rose-500/15 hover:bg-rose-500/30 text-rose-400 border border-rose-500/30 font-semibold transition">↩️ 취소</button>`
+            }
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function renderAll() {
+      const totalKRW = assets.reduce((sum, a) => sum + getAssetValueKRW(a), 0);
+      const totalCost = assets.reduce((sum, a) => sum + getAssetCostKRW(a), 0);
+      const totalProfit = totalKRW - totalCost;
+      const totalProfitPct = totalCost > 0 ? (totalProfit / totalCost) * 100 : 0;
+
+      document.getElementById('total-asset-display').textContent = formatKRW(totalKRW);
+      document.getElementById('total-cost-display').textContent = `원금 ${formatKRW(totalCost)} · 누적수익 ${totalProfit >= 0 ? '+' : ''}${formatKRW(totalProfit)}`;
+      document.getElementById('total-profit-badge').textContent = `${totalProfitPct >= 0 ? '+' : ''}${totalProfitPct.toFixed(1)}%`;
+
+      renderStackedDimensionBar();
+      renderTrendChart();
+      renderHoldingsTable();
+      renderLedgerTable();
+    }
+
+    function appendChatMessage(sender, htmlText, isUser = false) {
+      const box = document.getElementById('tg-chat-box');
+      const msg = document.createElement('div');
+      msg.className = isUser
+        ? 'p-3 rounded-lg bg-sky-500/20 border border-sky-500/40 ml-auto max-w-[88%]'
+        : 'p-3 rounded-lg bg-[var(--background)] border border-[var(--border)] max-w-[95%]';
+      msg.innerHTML = `
+        <div class="font-semibold ${isUser ? 'text-sky-300' : 'text-sky-400'} mb-1">${sender}</div>
+        <div class="leading-relaxed">${htmlText}</div>
+      `;
+      box.appendChild(msg);
+      box.scrollTop = box.scrollHeight;
+    }
+
+    function simulateSmsShare(smsText) {
+      appendChatMessage('나 (체결문자 공유)', smsText, true);
+
+      setTimeout(() => {
+        txSeq++;
+        const txId = `TX-${txSeq}`;
+        const nowStr = '2026-10-19 22:58';
+
+        if (smsText.includes('삼성전자')) {
+          const sam = assets.find(a => a.ticker === '005930');
+          const mirae = sam.accounts[0];
+          const prevQty = mirae.qty;
+          const prevAvg = mirae.avgPrice;
+
+          const addQty = 50;
+          const buyPrice = 76000;
+          mirae.avgPrice = ((mirae.qty * mirae.avgPrice) + (addQty * buyPrice)) / (mirae.qty + addQty);
+          mirae.qty += addQty;
+
+          transactions.push({
+            id: txId, time: nowStr, broker: '미래에셋 (일반위탁)', type: '매수',
+            ticker: '005930', name: '삼성전자', qty: addQty, price: buyPrice, currency: 'KRW', status: 'ACTIVE',
+            rollbackData: { ticker: '005930', broker: '미래에셋 (일반위탁)', prevQty, prevAvg }
+          });
+
+          expandedTicker = '005930';
+          renderAll();
+
+          appendChatMessage('🤖 AssetFlow Bot (정규식 파서)', `
+            ✅ <strong>체결문자 반영 완료 (#${txId})</strong><br>
+            • 계좌: 미래에셋 (일반위탁) | 삼성전자 +50주 (@76,000원)<br>
+            • 반영후 잔고: ${mirae.qty}주 (평단 ₩${Math.round(mirae.avgPrice).toLocaleString()})<br>
+            <div class="mt-2 pt-2 border-t border-[var(--border)] flex items-center justify-between">
+              <span class="text-[var(--muted-foreground)]">잘못 인식되었나요?</span>
+              <button onclick="rollbackTransaction('${txId}')" class="px-2.5 py-1 rounded bg-rose-500/20 hover:bg-rose-500/30 text-rose-400 font-semibold transition">
+                ↩️ #${txId} 거래 취소
+              </button>
+            </div>
+          `);
+        } else if (smsText.includes('NVDA')) {
+          const nvda = assets.find(a => a.ticker === 'NVDA');
+          const kiwoom = nvda.accounts[0];
+          const prevQty = kiwoom.qty;
+          const prevAvg = kiwoom.avgPrice;
+
+          const addQty = 10;
+          const buyPrice = 135.0;
+          kiwoom.avgPrice = ((kiwoom.qty * kiwoom.avgPrice) + (addQty * buyPrice)) / (kiwoom.qty + addQty);
+          kiwoom.qty += addQty;
+
+          transactions.push({
+            id: txId, time: nowStr, broker: '키움증권 (해외직투)', type: '매수',
+            ticker: 'NVDA', name: 'NVIDIA Corp', qty: addQty, price: buyPrice, currency: 'USD', status: 'ACTIVE',
+            rollbackData: { ticker: 'NVDA', broker: '키움증권 (해외직투)', prevQty, prevAvg }
+          });
+
+          expandedTicker = 'NVDA';
+          renderAll();
+
+          appendChatMessage('🤖 AssetFlow Bot (정규식 파서)', `
+            ✅ <strong>해외주식 체결 반영 완료 (#${txId})</strong><br>
+            • 계좌: 키움증권 | NVDA +10주 (@$135.00)<br>
+            <div class="mt-2 pt-2 border-t border-[var(--border)] flex items-center justify-between">
+              <span class="text-[var(--muted-foreground)]">잘못 인식되었나요?</span>
+              <button onclick="rollbackTransaction('${txId}')" class="px-2.5 py-1 rounded bg-rose-500/20 hover:bg-rose-500/30 text-rose-400 font-semibold transition">
+                ↩️ #${txId} 거래 취소
+              </button>
+            </div>
+          `);
+        } else if (smsText.includes('만기')) {
+          const dep = assets.find(a => a.ticker === 'DEP-SH');
+          const cma = assets.find(a => a.ticker === 'CMA-MA');
+          const prevDepQty = dep.accounts[0].qty;
+          const prevCmaQty = cma.accounts[0].qty;
+
+          if (prevDepQty === 0) {
+            appendChatMessage('🤖 AssetFlow Bot', '이미 만기 해지가 반영된 예금입니다.');
+            return;
+          }
+
+          dep.accounts[0].qty = 0;
+          cma.accounts[0].qty += prevDepQty;
+
+          transactions.push({
+            id: txId, time: nowStr, broker: '신한은행 → 미래에셋CMA', type: '만기이체',
+            ticker: 'DEP-SH', name: '신한 정기예금 만기', qty: prevDepQty, price: 1, currency: 'KRW', status: 'ACTIVE',
+            rollbackData: { isMaturity: true, prevDepQty, prevCmaQty }
+          });
+
+          selectDimension('liquidity');
+          renderAll();
+
+          appendChatMessage('🤖 AssetFlow Bot (정규식 파서)', `
+            🏦 <strong>예금 만기 문자 인식 & 이체 완료 (#${txId})</strong><br>
+            • 신한 정기예금 ₩50,000,000 → 미래에셋 CMA 이체 반영<br>
+            <div class="mt-2 pt-2 border-t border-[var(--border)] flex items-center justify-between">
+              <span class="text-[var(--muted-foreground)]">잘못 인식되었나요?</span>
+              <button onclick="rollbackTransaction('${txId}')" class="px-2.5 py-1 rounded bg-rose-500/20 hover:bg-rose-500/30 text-rose-400 font-semibold transition">
+                ↩️ #${txId} 거래 취소
+              </button>
+            </div>
+          `);
+        } else {
+          appendChatMessage('🤖 AssetFlow Bot', `🔎 문자 분석 완료: <em>"${smsText}"</em>`);
+        }
+      }, 200);
+    }
+
+    function rollbackTransaction(txId) {
+      const tx = transactions.find(t => t.id === txId);
+      if (!tx || tx.status === 'CANCELED') {
+        appendChatMessage('🤖 AssetFlow Bot', `⚠️ #${txId} 거래는 이미 취소되었습니다.`);
+        return;
+      }
+
+      tx.status = 'CANCELED';
+      const rb = tx.rollbackData;
+
+      if (rb.isMaturity) {
+        assets.find(a => a.ticker === 'DEP-SH').accounts[0].qty = rb.prevDepQty;
+        assets.find(a => a.ticker === 'CMA-MA').accounts[0].qty = rb.prevCmaQty;
+      } else {
+        const asset = assets.find(a => a.ticker === rb.ticker);
+        const acc = asset.accounts.find(ac => ac.broker === rb.broker);
+        if (acc) {
+          acc.qty = rb.prevQty;
+          acc.avgPrice = rb.prevAvg;
+        }
+      }
+
+      renderAll();
+      appendChatMessage('🤖 AssetFlow Bot (복구 완료)', `↩️ <strong>#${txId} 거래 취소 완료</strong>: 직전 수량 및 평단가로 원상복구되었습니다.`);
+    }
+
+    function cancelLastTransactionFromChat() {
+      const activeList = transactions.filter(t => t.status === 'ACTIVE');
+      if (activeList.length === 0) return;
+      const lastTx = activeList[activeList.length - 1];
+      appendChatMessage('나', `/취소 #${lastTx.id}`, true);
+      rollbackTransaction(lastTx.id);
+    }
+
+    function handleCustomTgInput() {
+      const input = document.getElementById('tg-input');
+      const val = input.value.trim();
+      if (!val) return;
+      input.value = '';
+      if (val.startsWith('/취소')) cancelLastTransactionFromChat();
+      else simulateSmsShare(val);
+    }
+
+    function simulateMarketCrash() {
+      const sam = assets.find(a => a.ticker === '005930');
+      const nvda = assets.find(a => a.ticker === 'NVDA');
+      sam.price = 61500;
+      nvda.price = 112.0;
+      renderAll();
+      appendChatMessage('🚨 상시 감시 데몬 (로컬 서버)', `
+        <strong>[긴급 가격 하락 알림]</strong><br>
+        • 삼성전자: 고점 대비 <strong>-30.7%</strong> / 평단 대비 <strong>-12.0%</strong><br>
+        • NVIDIA: 고점 대비 <strong>-20.5%</strong>
+      `);
+    }
+
+    function simulateMarketPriceUpdate() {
+      assets.forEach(a => {
+        if (a.price > 1) {
+          const delta = 1 + (Math.random() * 0.05 - 0.02);
+          a.price = a.currency === 'USD'
+            ? Math.round(a.price * delta * 10) / 10
+            : Math.round((a.price * delta) / 100) * 100;
+          if (a.price > a.highPrice) a.highPrice = a.price;
+        }
+      });
+      renderAll();
+    }
+
+    renderAll();
+  </script>
+</body>
+</html>

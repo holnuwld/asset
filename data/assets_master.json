@@ -1,0 +1,1142 @@
+{
+  "396500": {
+    "ticker": "396500",
+    "name": "TIGER 반도체TOP10",
+    "market": "KR_ETF",
+    "currency": "KRW",
+    "kind": "STOCK",
+    "price": 29802.7,
+    "prev": 24332.0,
+    "high52": 34273.0,
+    "exp": {
+      "risk": "risk_on",
+      "currency": {
+        "real": "KRW",
+        "listing": "KRW"
+      },
+      "country": "KR",
+      "liquidity": "liquid"
+    }
+  },
+  "091160": {
+    "ticker": "091160",
+    "name": "KODEX 미국반도체",
+    "market": "KR_ETF",
+    "currency": "KRW",
+    "kind": "STOCK",
+    "price": 46307.3,
+    "prev": 12325.0,
+    "high52": 53253.0,
+    "exp": {
+      "risk": "risk_on",
+      "currency": {
+        "real": "USD",
+        "listing": "KRW"
+      },
+      "country": "US",
+      "liquidity": "liquid"
+    }
+  },
+  "487440": {
+    "ticker": "487440",
+    "name": "KODEX 미국AI전력핵심인프라",
+    "market": "KR_ETF",
+    "currency": "KRW",
+    "kind": "STOCK",
+    "price": 15698.3,
+    "prev": 16068.0,
+    "high52": 18053.0,
+    "exp": {
+      "risk": "risk_on",
+      "currency": {
+        "real": "USD",
+        "listing": "KRW"
+      },
+      "country": "US",
+      "liquidity": "liquid"
+    }
+  },
+  "381170": {
+    "ticker": "381170",
+    "name": "TIGER 미국테크TOP10 INDXX",
+    "market": "KR_ETF",
+    "currency": "KRW",
+    "kind": "STOCK",
+    "price": 28378.1,
+    "prev": 12636.0,
+    "high52": 32635.0,
+    "exp": {
+      "risk": "risk_on",
+      "currency": {
+        "real": "USD",
+        "listing": "KRW"
+      },
+      "country": "US",
+      "liquidity": "liquid"
+    }
+  },
+  "329750": {
+    "ticker": "329750",
+    "name": "TIGER 미국달러단기채권액티브",
+    "market": "KR_ETF",
+    "currency": "KRW",
+    "kind": "STOCK",
+    "price": 12733.9,
+    "prev": 13054.0,
+    "high52": 14644.0,
+    "exp": {
+      "risk": "risk_on",
+      "currency": {
+        "real": "USD",
+        "listing": "KRW"
+      },
+      "country": "US",
+      "liquidity": "liquid"
+    }
+  },
+  "457490_US": {
+    "ticker": "457490_US",
+    "name": "KODEX 미국머니마켓액티브",
+    "market": "KR_ETF",
+    "currency": "KRW",
+    "kind": "STOCK",
+    "price": 13330.0,
+    "prev": 13869.99,
+    "high52": 15329.0,
+    "exp": {
+      "risk": "risk_on",
+      "currency": {
+        "real": "USD",
+        "listing": "KRW"
+      },
+      "country": "US",
+      "liquidity": "liquid"
+    }
+  },
+  "138910": {
+    "ticker": "138910",
+    "name": "TIGER 구리실물",
+    "market": "KR_ETF",
+    "currency": "KRW",
+    "kind": "STOCK",
+    "price": 15378.8,
+    "prev": 15594.0,
+    "high52": 17686.0,
+    "exp": {
+      "risk": "risk_off",
+      "currency": {
+        "real": "KRW",
+        "listing": "KRW"
+      },
+      "country": null,
+      "liquidity": "liquid"
+    }
+  },
+  "CASH-KRW-KB": {
+    "ticker": "CASH-KRW-KB",
+    "name": "KB증권 연금예수금",
+    "market": "CASH",
+    "currency": "KRW",
+    "kind": "CASH",
+    "price": 1.0,
+    "prev": 1.0,
+    "high52": 1.0,
+    "exp": {
+      "risk": "risk_off",
+      "currency": {
+        "real": "KRW",
+        "listing": "KRW"
+      },
+      "country": null,
+      "liquidity": "liquid"
+    }
+  },
+  "379800": {
+    "ticker": "379800",
+    "name": "KODEX 미국나스닥100TR",
+    "market": "KR_ETF",
+    "currency": "KRW",
+    "kind": "STOCK",
+    "price": 21855.88,
+    "prev": 19200.0,
+    "high52": 25134.0,
+    "exp": {
+      "risk": "risk_on",
+      "currency": {
+        "real": "USD",
+        "listing": "KRW"
+      },
+      "country": "US",
+      "liquidity": "liquid"
+    }
+  },
+  "379780": {
+    "ticker": "379780",
+    "name": "RISE 미국S&P500",
+    "market": "KR_ETF",
+    "currency": "KRW",
+    "kind": "STOCK",
+    "price": 20677.09,
+    "prev": 17696.36,
+    "high52": 23779.0,
+    "exp": {
+      "risk": "risk_on",
+      "currency": {
+        "real": "USD",
+        "listing": "KRW"
+      },
+      "country": "US",
+      "liquidity": "liquid"
+    }
+  },
+  "453850": {
+    "ticker": "453850",
+    "name": "ACE 미국30년국채액티브(H)",
+    "market": "KR_ETF",
+    "currency": "KRW",
+    "kind": "STOCK",
+    "price": 7616.14,
+    "prev": 8736.13,
+    "high52": 8759.0,
+    "exp": {
+      "risk": "risk_on",
+      "currency": {
+        "real": "USD",
+        "listing": "KRW"
+      },
+      "country": "US",
+      "liquidity": "liquid"
+    }
+  },
+  "371460": {
+    "ticker": "371460",
+    "name": "TIGER 차이나전기차SOLACTIVE",
+    "market": "KR_ETF",
+    "currency": "KRW",
+    "kind": "STOCK",
+    "price": 8523.9,
+    "prev": 10251.0,
+    "high52": 9802.0,
+    "exp": {
+      "risk": "risk_on",
+      "currency": {
+        "real": "CNY",
+        "listing": "KRW"
+      },
+      "country": "CN",
+      "liquidity": "liquid"
+    }
+  },
+  "245340": {
+    "ticker": "245340",
+    "name": "TIGER 미국다우존스30",
+    "market": "KR_ETF",
+    "currency": "KRW",
+    "kind": "STOCK",
+    "price": 33740.0,
+    "prev": 16800.0,
+    "high52": 38801.0,
+    "exp": {
+      "risk": "risk_on",
+      "currency": {
+        "real": "USD",
+        "listing": "KRW"
+      },
+      "country": "US",
+      "liquidity": "liquid"
+    }
+  },
+  "269540": {
+    "ticker": "269540",
+    "name": "PLUS 미국S&P500(H)",
+    "market": "KR_ETF",
+    "currency": "KRW",
+    "kind": "STOCK",
+    "price": 29410.0,
+    "prev": 13780.0,
+    "high52": 33822.0,
+    "exp": {
+      "risk": "risk_on",
+      "currency": {
+        "real": "USD",
+        "listing": "KRW"
+      },
+      "country": "US",
+      "liquidity": "liquid"
+    }
+  },
+  "CASH-KRW-SAMIRP": {
+    "ticker": "CASH-KRW-SAMIRP",
+    "name": "현금성자산(삼성증권)",
+    "market": "CASH",
+    "currency": "KRW",
+    "kind": "RP",
+    "price": 1.0,
+    "prev": 1.0,
+    "high52": 1.0,
+    "exp": {
+      "risk": "risk_off",
+      "currency": {
+        "real": "KRW",
+        "listing": "KRW"
+      },
+      "country": null,
+      "liquidity": "liquid"
+    }
+  },
+  "005930": {
+    "ticker": "005930",
+    "name": "삼성전자",
+    "market": "KR_STOCK",
+    "currency": "KRW",
+    "kind": "STOCK",
+    "price": 222000.0,
+    "prev": 70231.9,
+    "high52": 255300.0,
+    "exp": {
+      "risk": "risk_on",
+      "currency": {
+        "real": "KRW",
+        "listing": "KRW"
+      },
+      "country": "KR",
+      "liquidity": "liquid"
+    }
+  },
+  "457490": {
+    "ticker": "457490",
+    "name": "KODEX 머니마켓액티브",
+    "market": "KR_ETF",
+    "currency": "KRW",
+    "kind": "STOCK",
+    "price": 106030.0,
+    "prev": 103738.0,
+    "high52": 121934.0,
+    "exp": {
+      "risk": "risk_off",
+      "currency": {
+        "real": "KRW",
+        "listing": "KRW"
+      },
+      "country": "KR",
+      "liquidity": "liquid"
+    }
+  },
+  "449170": {
+    "ticker": "449170",
+    "name": "TIGER KOFR금리액티브(합성)",
+    "market": "KR_ETF",
+    "currency": "KRW",
+    "kind": "STOCK",
+    "price": 112325.0,
+    "prev": 109407.0,
+    "high52": 129174.0,
+    "exp": {
+      "risk": "risk_off",
+      "currency": {
+        "real": "KRW",
+        "listing": "KRW"
+      },
+      "country": "KR",
+      "liquidity": "liquid"
+    }
+  },
+  "000660": {
+    "ticker": "000660",
+    "name": "SK하이닉스",
+    "market": "KR_STOCK",
+    "currency": "KRW",
+    "kind": "STOCK",
+    "price": 1414000.0,
+    "prev": 1308857.0,
+    "high52": 1626100.0,
+    "exp": {
+      "risk": "risk_on",
+      "currency": {
+        "real": "KRW",
+        "listing": "KRW"
+      },
+      "country": "KR",
+      "liquidity": "liquid"
+    }
+  },
+  "005380": {
+    "ticker": "005380",
+    "name": "현대차",
+    "market": "KR_STOCK",
+    "currency": "KRW",
+    "kind": "STOCK",
+    "price": 279000.0,
+    "prev": 232300.0,
+    "high52": 320850.0,
+    "exp": {
+      "risk": "risk_on",
+      "currency": {
+        "real": "KRW",
+        "listing": "KRW"
+      },
+      "country": "KR",
+      "liquidity": "liquid"
+    }
+  },
+  "006400": {
+    "ticker": "006400",
+    "name": "삼성SDI",
+    "market": "KR_STOCK",
+    "currency": "KRW",
+    "kind": "STOCK",
+    "price": 497500.0,
+    "prev": 288875.1,
+    "high52": 572125.0,
+    "exp": {
+      "risk": "risk_on",
+      "currency": {
+        "real": "KRW",
+        "listing": "KRW"
+      },
+      "country": "KR",
+      "liquidity": "liquid"
+    }
+  },
+  "078600": {
+    "ticker": "078600",
+    "name": "대주전자재료",
+    "market": "KR_STOCK",
+    "currency": "KRW",
+    "kind": "STOCK",
+    "price": 83100.0,
+    "prev": 99517.0,
+    "high52": 95565.0,
+    "exp": {
+      "risk": "risk_on",
+      "currency": {
+        "real": "KRW",
+        "listing": "KRW"
+      },
+      "country": "KR",
+      "liquidity": "liquid"
+    }
+  },
+  "487430": {
+    "ticker": "487430",
+    "name": "KODEX AI전력핵심설비",
+    "market": "KR_ETF",
+    "currency": "KRW",
+    "kind": "STOCK",
+    "price": 25075.0,
+    "prev": 40349.0,
+    "high52": 28836.0,
+    "exp": {
+      "risk": "risk_on",
+      "currency": {
+        "real": "USD",
+        "listing": "KRW"
+      },
+      "country": "US",
+      "liquidity": "liquid"
+    }
+  },
+  "278530": {
+    "ticker": "278530",
+    "name": "KODEX 200TR",
+    "market": "KR_ETF",
+    "currency": "KRW",
+    "kind": "STOCK",
+    "price": 32430.0,
+    "prev": 8249.0,
+    "high52": 37294.0,
+    "exp": {
+      "risk": "risk_on",
+      "currency": {
+        "real": "KRW",
+        "listing": "KRW"
+      },
+      "country": "KR",
+      "liquidity": "liquid"
+    }
+  },
+  "035420": {
+    "ticker": "035420",
+    "name": "NAVER",
+    "market": "KR_STOCK",
+    "currency": "KRW",
+    "kind": "STOCK",
+    "price": 171200.0,
+    "prev": 213719.7,
+    "high52": 196880.0,
+    "exp": {
+      "risk": "risk_on",
+      "currency": {
+        "real": "KRW",
+        "listing": "KRW"
+      },
+      "country": "KR",
+      "liquidity": "liquid"
+    }
+  },
+  "195870": {
+    "ticker": "195870",
+    "name": "해성디에스",
+    "market": "KR_STOCK",
+    "currency": "KRW",
+    "kind": "STOCK",
+    "price": 44150.0,
+    "prev": 50486.1,
+    "high52": 50772.0,
+    "exp": {
+      "risk": "risk_on",
+      "currency": {
+        "real": "KRW",
+        "listing": "KRW"
+      },
+      "country": "KR",
+      "liquidity": "liquid"
+    }
+  },
+  "000270": {
+    "ticker": "000270",
+    "name": "기아",
+    "market": "KR_STOCK",
+    "currency": "KRW",
+    "kind": "STOCK",
+    "price": 96700.0,
+    "prev": 81221.4,
+    "high52": 111205.0,
+    "exp": {
+      "risk": "risk_on",
+      "currency": {
+        "real": "KRW",
+        "listing": "KRW"
+      },
+      "country": "KR",
+      "liquidity": "liquid"
+    }
+  },
+  "051600": {
+    "ticker": "051600",
+    "name": "한전KPS",
+    "market": "KR_STOCK",
+    "currency": "KRW",
+    "kind": "STOCK",
+    "price": 41900.0,
+    "prev": 56769.0,
+    "high52": 48185.0,
+    "exp": {
+      "risk": "risk_on",
+      "currency": {
+        "real": "KRW",
+        "listing": "KRW"
+      },
+      "country": "KR",
+      "liquidity": "liquid"
+    }
+  },
+  "207940": {
+    "ticker": "207940",
+    "name": "삼성바이오로직스",
+    "market": "KR_STOCK",
+    "currency": "KRW",
+    "kind": "STOCK",
+    "price": 1435000.0,
+    "prev": 912111.0,
+    "high52": 1650250.0,
+    "exp": {
+      "risk": "risk_on",
+      "currency": {
+        "real": "KRW",
+        "listing": "KRW"
+      },
+      "country": "KR",
+      "liquidity": "liquid"
+    }
+  },
+  "192650": {
+    "ticker": "192650",
+    "name": "드림텍",
+    "market": "KR_STOCK",
+    "currency": "KRW",
+    "kind": "STOCK",
+    "price": 6330.0,
+    "prev": 9741.0,
+    "high52": 7279.0,
+    "exp": {
+      "risk": "risk_on",
+      "currency": {
+        "real": "KRW",
+        "listing": "KRW"
+      },
+      "country": "KR",
+      "liquidity": "liquid"
+    }
+  },
+  "030190": {
+    "ticker": "030190",
+    "name": "NICE평가정보",
+    "market": "KR_STOCK",
+    "currency": "KRW",
+    "kind": "STOCK",
+    "price": 17320.0,
+    "prev": 15229.0,
+    "high52": 19918.0,
+    "exp": {
+      "risk": "risk_on",
+      "currency": {
+        "real": "KRW",
+        "listing": "KRW"
+      },
+      "country": "KR",
+      "liquidity": "liquid"
+    }
+  },
+  "329180": {
+    "ticker": "329180",
+    "name": "HD현대중공업",
+    "market": "KR_STOCK",
+    "currency": "KRW",
+    "kind": "STOCK",
+    "price": 289000.0,
+    "prev": 491628.4,
+    "high52": 332350.0,
+    "exp": {
+      "risk": "risk_on",
+      "currency": {
+        "real": "KRW",
+        "listing": "KRW"
+      },
+      "country": "KR",
+      "liquidity": "liquid"
+    }
+  },
+  "487410": {
+    "ticker": "487410",
+    "name": "KODEX 반도체레버리지",
+    "market": "KR_ETF",
+    "currency": "KRW",
+    "kind": "STOCK",
+    "price": 46355.0,
+    "prev": 144383.0,
+    "high52": 53308.0,
+    "exp": {
+      "risk": "risk_on",
+      "currency": {
+        "real": "KRW",
+        "listing": "KRW"
+      },
+      "country": "KR",
+      "liquidity": "liquid"
+    }
+  },
+  "CASH-KRW-SAMGEN": {
+    "ticker": "CASH-KRW-SAMGEN",
+    "name": "삼성증권 일반예수금",
+    "market": "CASH",
+    "currency": "KRW",
+    "kind": "CASH",
+    "price": 1.0,
+    "prev": 1.0,
+    "high52": 1.0,
+    "exp": {
+      "risk": "risk_off",
+      "currency": {
+        "real": "KRW",
+        "listing": "KRW"
+      },
+      "country": null,
+      "liquidity": "liquid"
+    }
+  },
+  "243840": {
+    "ticker": "243840",
+    "name": "신흥에스이씨",
+    "market": "KR_STOCK",
+    "currency": "KRW",
+    "kind": "STOCK",
+    "price": 5710.0,
+    "prev": 10167.0,
+    "high52": 6566.0,
+    "exp": {
+      "risk": "risk_on",
+      "currency": {
+        "real": "KRW",
+        "listing": "KRW"
+      },
+      "country": "KR",
+      "liquidity": "liquid"
+    }
+  },
+  "SAMSUNG_EPIS_HOLDINGS": {
+    "ticker": "SAMSUNG_EPIS_HOLDINGS",
+    "name": "삼성에피스홀딩스",
+    "market": "KR_STOCK",
+    "currency": "KRW",
+    "kind": "STOCK",
+    "price": 310500.0,
+    "prev": 912111.0,
+    "high52": 357075.0,
+    "exp": {
+      "risk": "risk_on",
+      "currency": {
+        "real": "KRW",
+        "listing": "KRW"
+      },
+      "country": "KR",
+      "liquidity": "liquid"
+    }
+  },
+  "475400": {
+    "ticker": "475400",
+    "name": "씨메스로보틱스",
+    "market": "KR_STOCK",
+    "currency": "KRW",
+    "kind": "STOCK",
+    "price": 13390.0,
+    "prev": 34403.2,
+    "high52": 15398.0,
+    "exp": {
+      "risk": "risk_on",
+      "currency": {
+        "real": "KRW",
+        "listing": "KRW"
+      },
+      "country": "KR",
+      "liquidity": "liquid"
+    }
+  },
+  "131970": {
+    "ticker": "131970",
+    "name": "두산테스나",
+    "market": "KR_STOCK",
+    "currency": "KRW",
+    "kind": "STOCK",
+    "price": 82900.0,
+    "prev": 34017.0,
+    "high52": 95335.0,
+    "exp": {
+      "risk": "risk_on",
+      "currency": {
+        "real": "KRW",
+        "listing": "KRW"
+      },
+      "country": "KR",
+      "liquidity": "liquid"
+    }
+  },
+  "HANWHA_VISION": {
+    "ticker": "HANWHA_VISION",
+    "name": "한화비전",
+    "market": "KR_STOCK",
+    "currency": "KRW",
+    "kind": "STOCK",
+    "price": 48450.0,
+    "prev": 54898.0,
+    "high52": 55717.0,
+    "exp": {
+      "risk": "risk_on",
+      "currency": {
+        "real": "KRW",
+        "listing": "KRW"
+      },
+      "country": "KR",
+      "liquidity": "liquid"
+    }
+  },
+  "BOXX": {
+    "ticker": "BOXX",
+    "name": "Alpha Architect 1-3 Month Box ETF (BOXX)",
+    "market": "US_ETF",
+    "currency": "USD",
+    "kind": "STOCK",
+    "price": 118.85,
+    "prev": 117.12,
+    "high52": 136.68,
+    "exp": {
+      "risk": "risk_off",
+      "currency": {
+        "real": "USD",
+        "listing": "USD"
+      },
+      "country": "US",
+      "liquidity": "liquid"
+    }
+  },
+  "TSLA": {
+    "ticker": "TSLA",
+    "name": "Tesla Inc (TSLA)",
+    "market": "US_STOCK",
+    "currency": "USD",
+    "kind": "STOCK",
+    "price": 405.175,
+    "prev": 390.005,
+    "high52": 465.95,
+    "exp": {
+      "risk": "risk_on",
+      "currency": {
+        "real": "USD",
+        "listing": "USD"
+      },
+      "country": "US",
+      "liquidity": "liquid"
+    }
+  },
+  "8001.T": {
+    "ticker": "8001.T",
+    "name": "ITOCHU CORP (이토추상사, 8001)",
+    "market": "JP_STOCK",
+    "currency": "JPY",
+    "kind": "STOCK",
+    "price": 2271.0,
+    "prev": 1889.4,
+    "high52": 2612.0,
+    "exp": {
+      "risk": "risk_on",
+      "currency": {
+        "real": "JPY",
+        "listing": "JPY"
+      },
+      "country": "JP",
+      "liquidity": "liquid"
+    }
+  },
+  "7003.T": {
+    "ticker": "7003.T",
+    "name": "MITSUI E&S HOLDINGS (미쓰이E&S홀딩스, 7003)",
+    "market": "JP_STOCK",
+    "currency": "JPY",
+    "kind": "STOCK",
+    "price": 3506.0,
+    "prev": 5796.67,
+    "high52": 4032.0,
+    "exp": {
+      "risk": "risk_on",
+      "currency": {
+        "real": "JPY",
+        "listing": "JPY"
+      },
+      "country": "JP",
+      "liquidity": "liquid"
+    }
+  },
+  "6954.T": {
+    "ticker": "6954.T",
+    "name": "FANUC (화낙, 6954)",
+    "market": "JP_STOCK",
+    "currency": "JPY",
+    "kind": "STOCK",
+    "price": 5648.0,
+    "prev": 6184.0,
+    "high52": 6495.0,
+    "exp": {
+      "risk": "risk_on",
+      "currency": {
+        "real": "JPY",
+        "listing": "JPY"
+      },
+      "country": "JP",
+      "liquidity": "liquid"
+    }
+  },
+  "KORU": {
+    "ticker": "KORU",
+    "name": "Direxion Daily MSCI South Korea Bull 3X Shares (KORU)",
+    "market": "US_ETF",
+    "currency": "USD",
+    "kind": "STOCK",
+    "price": 11.1315,
+    "prev": 28.108,
+    "high52": 12.8,
+    "exp": {
+      "risk": "risk_on",
+      "currency": {
+        "real": "USD",
+        "listing": "USD"
+      },
+      "country": "KR",
+      "liquidity": "liquid"
+    }
+  },
+  "RAM": {
+    "ticker": "RAM",
+    "name": "Roundhill T-Rex 2X Long DRAM and Memory Device ETF (RAM)",
+    "market": "US_ETF",
+    "currency": "USD",
+    "kind": "STOCK",
+    "price": 8.0999,
+    "prev": 20.5694,
+    "high52": 9.31,
+    "exp": {
+      "risk": "risk_on",
+      "currency": {
+        "real": "USD",
+        "listing": "USD"
+      },
+      "country": "US",
+      "liquidity": "liquid"
+    }
+  },
+  "282A.T": {
+    "ticker": "282A.T",
+    "name": "GLOBAL X JAPAN SEMICONDUCTOR (282A)",
+    "market": "JP_ETF",
+    "currency": "JPY",
+    "kind": "STOCK",
+    "price": 2083.0,
+    "prev": 1750.0,
+    "high52": 2395.0,
+    "exp": {
+      "risk": "risk_on",
+      "currency": {
+        "real": "JPY",
+        "listing": "JPY"
+      },
+      "country": "JP",
+      "liquidity": "liquid"
+    }
+  },
+  "SMR": {
+    "ticker": "SMR",
+    "name": "NuScale Power Corp (SMR)",
+    "market": "US_STOCK",
+    "currency": "USD",
+    "kind": "STOCK",
+    "price": 5.41,
+    "prev": 14.8,
+    "high52": 6.22,
+    "exp": {
+      "risk": "risk_on",
+      "currency": {
+        "real": "USD",
+        "listing": "USD"
+      },
+      "country": "US",
+      "liquidity": "liquid"
+    }
+  },
+  "GOLD-KRX": {
+    "ticker": "GOLD-KRX",
+    "name": "금 99.99_1kg",
+    "market": "KRX_GOLD",
+    "currency": "KRW",
+    "kind": "STOCK",
+    "price": 168970.0,
+    "prev": 115869.0,
+    "high52": 194315.0,
+    "exp": {
+      "risk": "risk_off",
+      "currency": {
+        "real": "KRW",
+        "listing": "KRW"
+      },
+      "country": null,
+      "liquidity": "liquid"
+    }
+  },
+  "UEC": {
+    "ticker": "UEC",
+    "name": "Uranium Energy Corp (UEC)",
+    "market": "US_STOCK",
+    "currency": "USD",
+    "kind": "STOCK",
+    "price": 7.66,
+    "prev": 12.22,
+    "high52": 8.81,
+    "exp": {
+      "risk": "risk_on",
+      "currency": {
+        "real": "USD",
+        "listing": "USD"
+      },
+      "country": "US",
+      "liquidity": "liquid"
+    }
+  },
+  "CASH-KRW-NAMUGOLD": {
+    "ticker": "CASH-KRW-NAMUGOLD",
+    "name": "나무 금현물 예수금",
+    "market": "CASH",
+    "currency": "KRW",
+    "kind": "CASH",
+    "price": 1.0,
+    "prev": 1.0,
+    "high52": 1.0,
+    "exp": {
+      "risk": "risk_off",
+      "currency": {
+        "real": "KRW",
+        "listing": "KRW"
+      },
+      "country": null,
+      "liquidity": "liquid"
+    }
+  },
+  "DEP-MG-2027": {
+    "ticker": "DEP-MG-2027",
+    "name": "삼성전자 새마을금고 정기예탁금",
+    "market": "DEPOSIT",
+    "currency": "KRW",
+    "kind": "DEPOSIT",
+    "price": 1.0,
+    "prev": 1.0,
+    "high52": 1.0,
+    "exp": {
+      "risk": "risk_off",
+      "currency": {
+        "real": "KRW",
+        "listing": "KRW"
+      },
+      "country": null,
+      "liquidity": "fixed"
+    }
+  },
+  "CASH-JPY-TOSS": {
+    "ticker": "CASH-JPY-TOSS",
+    "name": "토스 외화통장 엔화(JPY)",
+    "market": "CASH",
+    "currency": "JPY",
+    "kind": "CASH",
+    "price": 1.0,
+    "prev": 1.052099176,
+    "high52": 1.0,
+    "exp": {
+      "risk": "risk_off",
+      "currency": {
+        "real": "JPY",
+        "listing": "JPY"
+      },
+      "country": null,
+      "liquidity": "liquid"
+    }
+  },
+  "RP-USD-7D-1": {
+    "ticker": "RP-USD-7D-1",
+    "name": "USD 일반RP(7일, 3.50%) #1",
+    "market": "CASH",
+    "currency": "USD",
+    "kind": "RP",
+    "price": 1.0,
+    "prev": 1.0,
+    "high52": 1.15,
+    "exp": {
+      "risk": "risk_off",
+      "currency": {
+        "real": "USD",
+        "listing": "USD"
+      },
+      "country": null,
+      "liquidity": "liquid"
+    }
+  },
+  "RP-USD-7D-2": {
+    "ticker": "RP-USD-7D-2",
+    "name": "USD 일반RP(7일, 3.50%) #2",
+    "market": "CASH",
+    "currency": "USD",
+    "kind": "RP",
+    "price": 1.0,
+    "prev": 1.0,
+    "high52": 1.15,
+    "exp": {
+      "risk": "risk_off",
+      "currency": {
+        "real": "USD",
+        "listing": "USD"
+      },
+      "country": null,
+      "liquidity": "liquid"
+    }
+  },
+  "RP-USD-ONDEMAND": {
+    "ticker": "RP-USD-ONDEMAND",
+    "name": "USD 일반RP(수시, 3.35%)",
+    "market": "CASH",
+    "currency": "USD",
+    "kind": "RP",
+    "price": 1.0,
+    "prev": 1.0,
+    "high52": 1.15,
+    "exp": {
+      "risk": "risk_off",
+      "currency": {
+        "real": "USD",
+        "listing": "USD"
+      },
+      "country": null,
+      "liquidity": "liquid"
+    }
+  },
+  "RP-KRW-ISA-7D": {
+    "ticker": "RP-KRW-ISA-7D",
+    "name": "일반RP(7일, 2.65%)",
+    "market": "CASH",
+    "currency": "KRW",
+    "kind": "RP",
+    "price": 1.0,
+    "prev": 1.0,
+    "high52": 1.0,
+    "exp": {
+      "risk": "risk_off",
+      "currency": {
+        "real": "KRW",
+        "listing": "KRW"
+      },
+      "country": null,
+      "liquidity": "liquid"
+    }
+  },
+  "CASH-JPY-KIWOVS": {
+    "ticker": "CASH-JPY-KIWOVS",
+    "name": "키움증권 JPY 외화예수금",
+    "market": "CASH",
+    "currency": "JPY",
+    "kind": "CASH",
+    "price": 1.0,
+    "prev": 1.0,
+    "high52": 1.0,
+    "exp": {
+      "risk": "risk_off",
+      "currency": {
+        "real": "JPY",
+        "listing": "JPY"
+      },
+      "country": null,
+      "liquidity": "liquid"
+    }
+  },
+  "CASH-KRW-KIWOVS": {
+    "ticker": "CASH-KRW-KIWOVS",
+    "name": "키움증권 원화예수금",
+    "market": "CASH",
+    "currency": "KRW",
+    "kind": "CASH",
+    "price": 1.0,
+    "prev": 1.0,
+    "high52": 1.0,
+    "exp": {
+      "risk": "risk_off",
+      "currency": {
+        "real": "KRW",
+        "listing": "KRW"
+      },
+      "country": null,
+      "liquidity": "liquid"
+    }
+  },
+  "CASH-USD-KIWOVS": {
+    "ticker": "CASH-USD-KIWOVS",
+    "name": "키움증권 USD 외화예수금",
+    "market": "CASH",
+    "currency": "USD",
+    "kind": "CASH",
+    "price": 1.0,
+    "prev": 1.0,
+    "high52": 1.15,
+    "exp": {
+      "risk": "risk_off",
+      "currency": {
+        "real": "USD",
+        "listing": "USD"
+      },
+      "country": null,
+      "liquidity": "liquid"
+    }
+  }
+}
