@@ -43,6 +43,8 @@
   </style>
 </head>
 <body class="antialiased p-3 md:p-6 max-w-[1600px] mx-auto">
+  <!-- Floating Toast Notification -->
+  <div id="toast-container" class="fixed top-5 right-5 z-50 flex flex-col gap-2 max-w-sm pointer-events-none"></div>
 
   <!-- 1. 거시/시장 지표 바 -->
   <section id="macro-bar" class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-3 mb-4 shadow-sm text-xs space-y-1.5"></section>
@@ -63,7 +65,7 @@
         <input type="checkbox" id="auto-refresh-check" onchange="toggleAutoRefresh(this.checked)" class="rounded text-sky-500 accent-sky-500">
         <span class="font-medium">30초 자동</span>
       </label>
-      <span id="last-refresh-time" class="text-[11px] text-[var(--muted-foreground)] hidden sm:inline-block"></span>
+      <span id="last-refresh-time" class="text-[11px] text-[var(--muted-foreground)] px-2 py-1 rounded bg-[var(--card)] border border-[var(--border)]">시세 대기 중</span>
       <button onclick="openSetupModal()" class="bg-sky-500 hover:bg-sky-600 text-white px-3 py-1.5 rounded-lg text-xs font-semibold transition">📥 자산설정 / 원금입금</button>
       <button onclick="toggleTheme()" class="bg-[var(--card)] hover:opacity-90 border border-[var(--border)] px-2.5 py-1.5 rounded-lg text-xs font-medium transition">🌓 테마</button>
       <button onclick="toggleColorRule()" id="btn-color-rule" class="bg-[var(--card)] hover:opacity-90 border border-[var(--border)] px-2.5 py-1.5 rounded-lg text-xs font-medium transition">🎨 한국식</button>
@@ -1885,26 +1887,47 @@
     checkAlerts(false); renderAll();
   }
 
+  const API_BASE = (window.location.origin && window.location.origin.startsWith('http')) ? '' : 'http://localhost:8000';
   let isBackendConnected = false;
+
+  function showToast(message, type = 'info', duration = 3500) {
+    const container = document.getElementById('toast-container');
+    if (!container) return;
+    const toast = document.createElement('div');
+    const bg = type === 'success' ? 'bg-emerald-600' : type === 'error' ? 'bg-rose-600' : type === 'warn' ? 'bg-amber-600' : 'bg-sky-600';
+    toast.className = `${bg} text-white text-xs font-medium px-4 py-2.5 rounded-lg shadow-xl flex items-center gap-2 transform transition-all duration-300 translate-y-[-10px] opacity-0 pointer-events-auto border border-white/10`;
+    toast.innerHTML = message;
+    container.appendChild(toast);
+    requestAnimationFrame(() => {
+      toast.classList.remove('translate-y-[-10px]', 'opacity-0');
+    });
+    setTimeout(() => {
+      toast.classList.add('opacity-0', 'translate-y-[-10px]');
+      setTimeout(() => toast.remove(), 300);
+    }, duration);
+  }
 
   async function checkBackendConnection() {
     try {
-      const res = await fetch('/api/summary', { cache: 'no-store' });
+      const res = await fetch(`${API_BASE}/api/summary`, { cache: 'no-store' });
       if (res.ok) {
         isBackendConnected = true;
         const badge = document.getElementById('backend-status-badge');
         if (badge) {
           badge.className = 'px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30';
-          badge.innerHTML = '🟢 백엔드 API 연동됨 (SQLite DB)';
+          badge.innerHTML = '🟢 백엔드 연동됨 (localhost:8000)';
         }
         await syncDataFromBackend();
+      } else {
+        throw new Error('HTTP ' + res.status);
       }
     } catch (e) {
       console.log('Running in standalone/offline mode:', e);
+      isBackendConnected = false;
       const badge = document.getElementById('backend-status-badge');
       if (badge) {
         badge.className = 'px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-500/15 text-amber-400 border border-amber-500/30';
-        badge.innerHTML = '⚪ 로컬 오프라인 모드';
+        badge.innerHTML = '⚪ 오프라인 모드 (run.bat 미실행)';
       }
     }
   }
@@ -1912,10 +1935,10 @@
   async function syncDataFromBackend() {
     try {
       const [sumRes, macroRes, txRes, snapRes] = await Promise.all([
-        fetch('/api/summary', { cache: 'no-store' }),
-        fetch('/api/macro', { cache: 'no-store' }),
-        fetch('/api/transactions', { cache: 'no-store' }),
-        fetch('/api/snapshots', { cache: 'no-store' })
+        fetch(`${API_BASE}/api/summary`, { cache: 'no-store' }),
+        fetch(`${API_BASE}/api/macro`, { cache: 'no-store' }),
+        fetch(`${API_BASE}/api/transactions`, { cache: 'no-store' }),
+        fetch(`${API_BASE}/api/snapshots`, { cache: 'no-store' })
       ]);
 
       if (macroRes.ok) {
@@ -2021,7 +2044,7 @@
   async function rollbackTransaction(id) {
     if (isBackendConnected) {
       try {
-        const res = await fetch(`/api/transactions/${id}/cancel`, { method: 'POST' });
+        const res = await fetch(`${API_BASE}/api/transactions/${id}/cancel`, { method: 'POST' });
         if (!res.ok) {
           const data = await res.json();
           appendChat('🤖 AssetFlow Bot', `⛔ <strong>#${id} 취소 불가</strong>: ${data.detail || '종속성 오류'}`);
@@ -2333,7 +2356,7 @@ KB개인연금,TIGER 미국S&P500,1800,16200,1
           mode: mode === 'replace' ? 'replace_all' : 'upsert'
         };
 
-        const res = await fetch('/api/opening/import', {
+        const res = await fetch(`${API_BASE}/api/opening/import`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload)
@@ -2386,46 +2409,92 @@ KB개인연금,TIGER 미국S&P500,1800,16200,1
       autoRefreshTimer = null;
     }
     if (enabled) {
+      showToast('⏱️ 30초 자동 시세 갱신 모드가 켜졌습니다.', 'info', 2000);
       triggerLiveMarketRefresh();
       autoRefreshTimer = setInterval(() => {
-        triggerLiveMarketRefresh();
+        triggerLiveMarketRefresh(true);
       }, 30000);
+    } else {
+      showToast('⏹️ 자동 시세 갱신이 꺼졌습니다.', 'info', 2000);
     }
   }
 
-  async function triggerLiveMarketRefresh() {
+  async function triggerLiveMarketRefresh(isAuto = false) {
     const btn = document.getElementById('btn-refresh-live');
     const timeSpan = document.getElementById('last-refresh-time');
+    
     if (btn) {
       btn.disabled = true;
-      btn.innerHTML = '⚡ 갱신 중...';
-      btn.classList.add('opacity-50');
+      btn.innerHTML = '<span class="inline-block animate-spin mr-1">🌀</span>시세 수집 중...';
+      btn.className = 'bg-amber-600 text-white px-3 py-1.5 rounded-lg text-xs font-semibold shadow-sm transition flex items-center gap-1.5 opacity-90 cursor-wait';
     }
-    if (timeSpan) timeSpan.textContent = '실시간 시세 조회 중...';
+    if (timeSpan) {
+      timeSpan.textContent = '조회 중...';
+      timeSpan.className = 'text-[11px] text-amber-400 px-2 py-1 rounded bg-amber-500/10 border border-amber-500/30';
+    }
+
+    if (!isAuto) {
+      showToast('📡 40개 종목 및 환율 실시간 수집을 요청했습니다...', 'info', 2000);
+    }
+
+    // Try backend check if not marked connected
+    if (!isBackendConnected) {
+      try {
+        const testRes = await fetch(`${API_BASE}/api/summary`, { cache: 'no-store' });
+        if (testRes.ok) {
+          isBackendConnected = true;
+          const badge = document.getElementById('backend-status-badge');
+          if (badge) {
+            badge.className = 'px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30';
+            badge.innerHTML = '🟢 백엔드 연동됨 (localhost:8000)';
+          }
+        }
+      } catch (e) {}
+    }
 
     if (isBackendConnected) {
       try {
-        const res = await fetch('/api/market/refresh-live', { method: 'POST' });
+        const res = await fetch(`${API_BASE}/api/market/refresh-live`, { method: 'POST' });
         if (res.ok) {
           const data = await res.json();
           await syncDataFromBackend();
+          const timeStr = data.updated_at ? data.updated_at.slice(11, 19) : new Date().toLocaleTimeString();
           if (timeSpan) {
-            timeSpan.textContent = `갱신: ${data.updated_at ? data.updated_at.slice(11, 19) : new Date().toLocaleTimeString()} (${data.assets_updated || 40}종목)`;
+            timeSpan.textContent = `🕒 ${timeStr} (${data.assets_updated || 40}종목)`;
+            timeSpan.className = 'text-[11px] text-emerald-400 px-2 py-1 rounded bg-emerald-500/10 border border-emerald-500/30';
+          }
+          
+          showToast(`✅ 실시간 시세 갱신 성공! (${data.assets_updated || 40}종목 수집, USD: ${data.fx?.USD || 1338}원)`, 'success', 3500);
+
+          if (btn) {
+            btn.innerHTML = '✅ 갱신 완료';
+            btn.className = 'bg-emerald-700 text-white px-3 py-1.5 rounded-lg text-xs font-semibold shadow-sm transition flex items-center gap-1.5';
+            setTimeout(() => {
+              btn.disabled = false;
+              btn.innerHTML = '⚡ 실시간 시세 갱신';
+              btn.className = 'bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 rounded-lg text-xs font-semibold shadow-sm transition flex items-center gap-1.5';
+            }, 1800);
+          }
+
+          // Visual feedback pulse on KPI card
+          const kpi = document.getElementById('kpi-total-card');
+          if (kpi) {
+            kpi.classList.add('ring-2', 'ring-emerald-400');
+            setTimeout(() => kpi.classList.remove('ring-2', 'ring-emerald-400'), 1500);
           }
           return;
+        } else {
+          throw new Error('Server returned ' + res.status);
         }
       } catch (e) {
         console.warn('Live market refresh failed:', e);
-      } finally {
-        if (btn) {
-          btn.disabled = false;
-          btn.innerHTML = '⚡ 실시간 시세 갱신';
-          btn.classList.remove('opacity-50');
-        }
+        showToast('⚠️ 백엔드 시세 수집에 실패했습니다. (오프라인 모드 전환)', 'warn', 3500);
       }
+    } else {
+      showToast('⚠️ 백엔드(localhost:8000) 미연결: run.bat을 실행해주세요! (오프라인 시뮬레이션 적용)', 'warn', 4500);
     }
 
-    // fallback simulation if offline
+    // fallback simulation if offline or error
     Object.values(ASSETS).forEach(a => {
       if (a.kind !== 'STOCK') return;
       const delta = 1 + (Math.random() * 0.05 - 0.02);
@@ -2433,11 +2502,14 @@ KB개인연금,TIGER 미국S&P500,1800,16200,1
       if (a.price > a.high52) a.high52 = a.price;
     });
     renderAll(); checkAlerts(false); renderAll();
-    if (timeSpan) timeSpan.textContent = '오프라인 시뮬레이션 완료';
+    if (timeSpan) {
+      timeSpan.textContent = '오프라인 시뮬레이션 완료';
+      timeSpan.className = 'text-[11px] text-amber-400 px-2 py-1 rounded bg-amber-500/10 border border-amber-500/30';
+    }
     if (btn) {
       btn.disabled = false;
       btn.innerHTML = '⚡ 실시간 시세 갱신';
-      btn.classList.remove('opacity-50');
+      btn.className = 'bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 rounded-lg text-xs font-semibold shadow-sm transition flex items-center gap-1.5';
     }
   }
   function toggleTheme() { document.documentElement.classList.toggle('light'); document.documentElement.classList.toggle('dark'); }

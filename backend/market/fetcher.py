@@ -135,11 +135,31 @@ class MarketFetcher:
         return {"updated_count": len(prices), "prices": prices}
 
     def fetch_all_macro(self) -> List[Dict[str, Any]]:
-        quotes = []
         now_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
+        tasks = {
+            "usdkrw": lambda: self.fetch_yahoo_quote("KRW=X"),
+            "jpykrw": lambda: self.fetch_yahoo_quote("JPYKRW=X"),
+            "eurkrw": lambda: self.fetch_yahoo_quote("EURKRW=X"),
+            "cnykrw": lambda: self.fetch_yahoo_quote("CNYKRW=X"),
+            "us10y": lambda: self.fetch_yahoo_quote("^TNX"),
+            "nasdaq": lambda: self.fetch_yahoo_quote("^IXIC"),
+            "kospi": lambda: self.fetch_yahoo_quote("^KS11"),
+            "kosdaq": lambda: self.fetch_yahoo_quote("^KQ11"),
+            "n225": lambda: self.fetch_yahoo_quote("^N225"),
+            "gold": lambda: self.fetch_krx_gold(),
+            "btcusd": lambda: self.fetch_yahoo_quote("BTC-USD"),
+            "upbit_btc": lambda: self.fetch_upbit_btc(),
+        }
+
+        with ThreadPoolExecutor(max_workers=12) as executor:
+            futures = {k: executor.submit(fn) for k, fn in tasks.items()}
+            raw = {k: fut.result() for k, fut in futures.items()}
+
+        quotes = []
+
         # 1. FX
-        usdkrw = self.fetch_yahoo_quote("KRW=X")
+        usdkrw = raw.get("usdkrw")
         if usdkrw:
             quotes.append({
                 "symbol": "USD/KRW", "name": "USD/KRW", "category": "FX",
@@ -149,7 +169,7 @@ class MarketFetcher:
         else:
             quotes.append({"symbol": "USD/KRW", "name": "USD/KRW", "category": "FX", "value": 1341.0, "prev_value": 1340.0, "change_pct": 0.07, "change_bp": None, "note": "Default", "updated_at": now_str})
 
-        jpykrw = self.fetch_yahoo_quote("JPYKRW=X")
+        jpykrw = raw.get("jpykrw")
         if jpykrw:
             quotes.append({
                 "symbol": "JPY/KRW", "name": "JPY(100)/KRW", "category": "FX",
@@ -159,20 +179,20 @@ class MarketFetcher:
         else:
             quotes.append({"symbol": "JPY/KRW", "name": "JPY(100)/KRW", "category": "FX", "value": 848.2, "prev_value": 850.1, "change_pct": -0.22, "change_bp": None, "note": "Default", "updated_at": now_str})
 
-        eurkrw = self.fetch_yahoo_quote("EURKRW=X")
+        eurkrw = raw.get("eurkrw")
         if eurkrw:
             quotes.append({"symbol": "EUR/KRW", "name": "EUR/KRW", "category": "FX", "value": round(eurkrw["price"], 1), "prev_value": round(eurkrw["prev"], 1), "change_pct": round(eurkrw["chg_pct"], 2), "change_bp": None, "note": None, "updated_at": now_str})
         else:
             quotes.append({"symbol": "EUR/KRW", "name": "EUR/KRW", "category": "FX", "value": 1502.3, "prev_value": 1499.6, "change_pct": 0.18, "change_bp": None, "note": None, "updated_at": now_str})
 
-        cnykrw = self.fetch_yahoo_quote("CNYKRW=X")
+        cnykrw = raw.get("cnykrw")
         if cnykrw:
             quotes.append({"symbol": "CNY/KRW", "name": "CNY/KRW", "category": "FX", "value": round(cnykrw["price"], 1), "prev_value": round(cnykrw["prev"], 1), "change_pct": round(cnykrw["chg_pct"], 2), "change_bp": None, "note": None, "updated_at": now_str})
         else:
             quotes.append({"symbol": "CNY/KRW", "name": "CNY/KRW", "category": "FX", "value": 194.2, "prev_value": 194.4, "change_pct": -0.12, "change_bp": None, "note": None, "updated_at": now_str})
 
         # 2. Bonds
-        us10y = self.fetch_yahoo_quote("^TNX")
+        us10y = raw.get("us10y")
         if us10y:
             bp = (us10y["price"] - us10y["prev"]) * 100
             quotes.append({
@@ -189,42 +209,50 @@ class MarketFetcher:
         quotes.append({"symbol": "CN10Y", "name": "CN 10Y", "category": "BOND", "value": 2.12, "prev_value": 2.15, "change_pct": -1.40, "change_bp": -3.0, "note": None, "updated_at": now_str})
 
         # 3. Indices
-        nasdaq = self.fetch_yahoo_quote("^IXIC")
+        nasdaq = raw.get("nasdaq")
         if nasdaq:
             quotes.append({"symbol": "NASDAQ", "name": "NASDAQ", "category": "INDEX", "value": round(nasdaq["price"], 1), "prev_value": round(nasdaq["prev"], 1), "change_pct": round(nasdaq["chg_pct"], 2), "change_bp": None, "note": None, "updated_at": now_str})
         else:
             quotes.append({"symbol": "NASDAQ", "name": "NASDAQ", "category": "INDEX", "value": 18489.5, "prev_value": 18371.9, "change_pct": 0.64, "change_bp": None, "note": None, "updated_at": now_str})
 
-        kospi = self.fetch_yahoo_quote("^KS11")
+        kospi = raw.get("kospi")
         if kospi:
             quotes.append({"symbol": "KOSPI", "name": "KOSPI", "category": "INDEX", "value": round(kospi["price"], 1), "prev_value": round(kospi["prev"], 1), "change_pct": round(kospi["chg_pct"], 2), "change_bp": None, "note": None, "updated_at": now_str})
         else:
             quotes.append({"symbol": "KOSPI", "name": "KOSPI", "category": "INDEX", "value": 2593.8, "prev_value": 2609.2, "change_pct": -0.59, "change_bp": None, "note": None, "updated_at": now_str})
 
-        kosdaq = self.fetch_yahoo_quote("^KQ11")
+        kosdaq = raw.get("kosdaq")
         if kosdaq:
             quotes.append({"symbol": "KOSDAQ", "name": "KOSDAQ", "category": "INDEX", "value": round(kosdaq["price"], 1), "prev_value": round(kosdaq["prev"], 1), "change_pct": round(kosdaq["chg_pct"], 2), "change_bp": None, "note": None, "updated_at": now_str})
         else:
             quotes.append({"symbol": "KOSDAQ", "name": "KOSDAQ", "category": "INDEX", "value": 753.2, "prev_value": 761.7, "change_pct": -1.12, "change_bp": None, "note": None, "updated_at": now_str})
 
-        n225 = self.fetch_yahoo_quote("^N225")
+        n225 = raw.get("n225")
         if n225:
             quotes.append({"symbol": "N225", "name": "NIKKEI", "category": "INDEX", "value": round(n225["price"], 1), "prev_value": round(n225["prev"], 1), "change_pct": round(n225["chg_pct"], 2), "change_bp": None, "note": None, "updated_at": now_str})
         else:
             quotes.append({"symbol": "N225", "name": "NIKKEI", "category": "INDEX", "value": 38981.7, "prev_value": 38911.5, "change_pct": 0.18, "change_bp": None, "note": None, "updated_at": now_str})
 
         # 4. Gold & Crypto
-        gold = self.fetch_krx_gold()
+        gold = raw.get("gold")
         if gold:
             quotes.append({"symbol": "KRX_GOLD", "name": "KRX Gold(1g)", "category": "GOLD", "value": round(gold["price"], 0), "prev_value": round(gold["prev"], 0), "change_pct": round(gold["chg_pct"], 2), "change_bp": None, "note": "KRX 실시간", "updated_at": now_str})
         else:
             quotes.append({"symbol": "KRX_GOLD", "name": "KRX Gold(1g)", "category": "GOLD", "value": 173870.0, "prev_value": 168970.0, "change_pct": 2.90, "change_bp": None, "note": None, "updated_at": now_str})
 
-        btcusd = self.fetch_yahoo_quote("BTC-USD")
+        btcusd = raw.get("btcusd")
         if btcusd:
             quotes.append({"symbol": "BTC_USD", "name": "Bitcoin($)", "category": "CRYPTO", "value": round(btcusd["price"], 1), "prev_value": round(btcusd["prev"], 1), "change_pct": round(btcusd["chg_pct"], 2), "change_bp": None, "note": None, "updated_at": now_str})
         else:
             quotes.append({"symbol": "BTC_USD", "name": "Bitcoin($)", "category": "CRYPTO", "value": 68420.0, "prev_value": 66986.0, "change_pct": 2.14, "change_bp": None, "note": None, "updated_at": now_str})
+
+        upbit_btc = raw.get("upbit_btc")
+        if upbit_btc:
+            quotes.append({"symbol": "BTC_KRW", "name": "Upbit BTC(KRW)", "category": "CRYPTO", "value": upbit_btc["price"], "prev_value": upbit_btc["prev"], "change_pct": round(upbit_btc["chg_pct"], 2), "change_bp": None, "note": "Upbit Live", "updated_at": now_str})
+        else:
+            quotes.append({"symbol": "BTC_KRW", "name": "Upbit BTC(KRW)", "category": "CRYPTO", "value": 94850000.0, "prev_value": 93008000.0, "change_pct": 1.98, "change_bp": None, "note": "09:00", "updated_at": now_str})
+
+        return quotes
 
         upbit_btc = self.fetch_upbit_btc()
         if upbit_btc:
